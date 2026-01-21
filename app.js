@@ -189,6 +189,11 @@ app.post('/api/casos', async (req, res) => {
     }
 });
 
+// Ruta raíz - Servir Index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Index.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
