@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso - Inspector Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <!-- MENÚ LATERAL MÓVIL -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menú</h2>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
+            <li><a href="paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
+            <li><a href="paso3.html"><i class="fas fa-check"></i> Finalizar</a></li>
+            <li><hr></li>
+            <li><a href="about.html"><i class="fas fa-info-circle"></i> Sobre la Aplicación</a></li>
+            <li><a href="config.html"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="help.html"><i class="fas fa-question-circle"></i> Ayuda</a></li>
+        </ul>
+    </nav>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>INSPECCIÓN DIGITAL ASTIDA</h1>
+                <div class="header-space"></div>
+            </div>
+        </header>
+
+        <div class="app-main">
+            <!-- SECCIÓN ACCESO - PASO 1 -->
+            <section class="tab-content active paso-section">
+                <div class="paso-header">
+                    <i class="fas fa-lock"></i>
+                    <h2>Acceso</h2>
+                </div>
+                <form id="accesoForm" class="paso-form">
+                    <div class="form-group">
+                        <label for="numero_siniestro">NÚMERO DE SINIESTRO</label>
+                        <input type="text" id="numero_siniestro" placeholder="Ej: S-2023-IND-01234" required>
+                        <div class="form-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rut">RUT</label>
+                        <input type="text" id="rut" placeholder="12.345.678-9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rut_asegurado">RUT ASEGURADO</label>
+                        <input type="text" id="rut_asegurado" placeholder="12.345.678-9" required>
+                    </div>
+                    <button type="submit" class="btn-primary">INGRESAR</button>
+                </form>
+                <div id="mensaje" class="mensaje"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="../public/script.js"></script>
+    <script>
+        // Evento de envío del formulario Paso 1
+        document.getElementById('accesoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const numero_siniestro = document.getElementById('numero_siniestro').value;
+            const rut = document.getElementById('rut').value;
+            const rut_asegurado = document.getElementById('rut_asegurado').value;
+            
+            if (!numero_siniestro || !rut || !rut_asegurado) {
+                mostrarMensaje('mensaje', 'Por favor completa todos los campos', 'error');
+                return;
+            }
+            
+            // Guardar en sessionStorage
+            sessionStorage.setItem('datosInspeccion', JSON.stringify({
+                siniestro: numero_siniestro,
+                rut: rut,
+                rut_asegurado: rut_asegurado
+            }));
+            
+            mostrarMensaje('mensaje', '✓ Datos validados correctamente', 'success');
+            setTimeout(() => {
+                window.location.href = 'paso2.html';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

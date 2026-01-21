@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar - Inspector Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <!-- MENÚ LATERAL MÓVIL -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menú</h2>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
+            <li><a href="paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
+            <li><a href="paso3.html"><i class="fas fa-check"></i> Finalizar</a></li>
+            <li><hr></li>
+            <li><a href="about.html"><i class="fas fa-info-circle"></i> Sobre la Aplicación</a></li>
+            <li><a href="config.html"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="help.html"><i class="fas fa-question-circle"></i> Ayuda</a></li>
+        </ul>
+    </nav>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>INSPECCIÓN DIGITAL ASTIDA</h1>
+                <div class="header-space"></div>
+            </div>
+        </header>
+
+        <div class="app-main">
+            <!-- SECCIÓN FINALIZAR - PASO 3 -->
+            <section class="tab-content active paso-section">
+                <div class="paso-header">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>Finalizar Inspección</h2>
+                </div>
+                <form id="finalizarForm" class="paso-form">
+                    <div class="resumen-info">
+                        <div class="info-row">
+                            <span class="info-label">SINIESTRO:</span>
+                            <span class="info-value" id="resumen_siniestro">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">RUT:</span>
+                            <span class="info-value" id="resumen_rut">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">COBERTURA:</span>
+                            <span class="info-value" id="resumen_cobertura">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">DESCRIPCIÓN:</span>
+                            <span class="info-value" id="resumen_descripcion">-</span>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="confirmar_veracidad" required>
+                        <label for="confirmar_veracidad">Confirmo la veracidad de la información</label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn-secondary" onclick="window.location.href='paso2.html'" style="flex: 1;">
+                            <i class="fas fa-arrow-left"></i> ATRÁS
+                        </button>
+                        <button type="submit" class="btn-enviar" style="flex: 1;">
+                            <i class="fas fa-paper-plane"></i> ENVIAR
+                        </button>
+                    </div>
+                </form>
+                <div id="mensajePaso3" class="mensaje"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="../public/script.js"></script>
+    <script>
+        // Cargar datos al abrir la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const datosInspeccion = JSON.parse(sessionStorage.getItem('datosInspeccion') || '{}');
+            
+            document.getElementById('resumen_siniestro').textContent = datosInspeccion.siniestro || '-';
+            document.getElementById('resumen_rut').textContent = datosInspeccion.rut || '-';
+            document.getElementById('resumen_cobertura').textContent = datosInspeccion.cobertura || '-';
+            document.getElementById('resumen_descripcion').textContent = datosInspeccion.descripcion || '-';
+        });
+
+        // Evento de envío del formulario Paso 3
+        document.getElementById('finalizarForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const confirmar = document.getElementById('confirmar_veracidad').checked;
+            
+            if (!confirmar) {
+                mostrarMensaje('mensajePaso3', 'Debes confirmar la veracidad de la información', 'error');
+                return;
+            }
+            
+            mostrarMensaje('mensajePaso3', '✓ Inspección enviada exitosamente', 'success');
+            
+            setTimeout(() => {
+                // Limpiar sessionStorage
+                sessionStorage.removeItem('datosInspeccion');
+                // Ir a inicio
+                window.location.href = '../Index.html';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

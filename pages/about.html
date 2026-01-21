@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre la Aplicación - Inspector Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <!-- MENÚ LATERAL MÓVIL -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menú</h2>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
+            <li><a href="paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
+            <li><a href="paso3.html"><i class="fas fa-check"></i> Finalizar</a></li>
+            <li><hr></li>
+            <li><a href="about.html"><i class="fas fa-info-circle"></i> Sobre la Aplicación</a></li>
+            <li><a href="config.html"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="help.html"><i class="fas fa-question-circle"></i> Ayuda</a></li>
+        </ul>
+    </nav>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>INSPECCIÓN DIGITAL ASTIDA</h1>
+                <div class="header-space"></div>
+            </div>
+        </header>
+
+        <div class="app-main">
+            <section class="tab-content active paso-section">
+                <div class="paso-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h2>Sobre la Aplicación</h2>
+                </div>
+                <div class="info-content">
+                    <div class="info-card">
+                        <h3><i class="fas fa-cube"></i> Inspector Digital</h3>
+                        <p><strong>Versión:</strong> 2.1</p>
+                        <p><strong>Última actualización:</strong> 21 de enero de 2026</p>
+                        <p><strong>Status:</strong> <span class="badge success">Producción</span></p>
+                    </div>
+
+                    <div class="info-card">
+                        <h3><i class="fas fa-graduation-cap"></i> Proyecto de Titulación</h3>
+                        <p><strong>Carrera:</strong> Analista Programador</p>
+                        <p><strong>Institución:</strong> IPACEX</p>
+                        <p><strong>Año:</strong> 2026</p>
+                    </div>
+
+                    <div class="info-card">
+                        <h3><i class="fas fa-cogs"></i> Tecnologías</h3>
+                        <ul class="tech-list">
+                            <li><strong>Frontend:</strong> HTML5, CSS3, JavaScript</li>
+                            <li><strong>Backend:</strong> Node.js, Express.js</li>
+                            <li><strong>Base de Datos:</strong> Azure SQL</li>
+                            <li><strong>Responsive:</strong> Mobile First Design</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h3><i class="fas fa-star"></i> Características</h3>
+                        <ul class="feature-list">
+                            <li>Interfaz 100% responsiva</li>
+                            <li>Menú hamburguesa funcional</li>
+                            <li>Captura de datos en 3 pasos</li>
+                            <li>Galería de fotos/videos</li>
+                            <li>API REST integrada</li>
+                            <li>Sincronización automática</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-footer">
+                        <p><i class="fas fa-heart"></i> Desarrollado con dedicación y profesionalismo</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="../public/script.js"></script>
+</body>
+</html>

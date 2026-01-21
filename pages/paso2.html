@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captura de Datos - Inspector Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <!-- MENÚ LATERAL MÓVIL -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menú</h2>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
+            <li><a href="paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
+            <li><a href="paso3.html"><i class="fas fa-check"></i> Finalizar</a></li>
+            <li><hr></li>
+            <li><a href="about.html"><i class="fas fa-info-circle"></i> Sobre la Aplicación</a></li>
+            <li><a href="config.html"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="help.html"><i class="fas fa-question-circle"></i> Ayuda</a></li>
+        </ul>
+    </nav>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>INSPECCIÓN DIGITAL ASTIDA</h1>
+                <div class="header-space"></div>
+            </div>
+        </header>
+
+        <div class="app-main">
+            <!-- SECCIÓN MÓDULO DE CAPTURA - PASO 2 -->
+            <section class="tab-content active paso-section">
+                <div class="paso-header">
+                    <i class="fas fa-edit"></i>
+                    <h2>Captura de Datos</h2>
+                </div>
+                <form id="capturaForm" class="paso-form">
+                    <div class="form-group">
+                        <label for="tipo_cobertura">TIPO DE COBERTURA</label>
+                        <select id="tipo_cobertura" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Incendio">Incendio</option>
+                            <option value="Sismo">Sismo</option>
+                            <option value="Inundacion">Inundación</option>
+                        </select>
+                        <div class="form-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion_danos">DESCRIPCIÓN DE DAÑOS</label>
+                        <textarea id="descripcion_danos" placeholder="Detalle los daños observados..." rows="3" required></textarea>
+                    </div>
+                    <div class="form-section-title">MEDIDAS MÉTRICAS</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="superficie">Superficie (m²) (Opcional)</label>
+                            <input type="number" id="superficie" placeholder="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="volumen">VOLUMEN (m³)</label>
+                            <input type="number" id="volumen" placeholder="120" value="120" step="0.01">
+                        </div>
+                    </div>
+                    <button type="button" class="btn-secondary" onclick="document.getElementById('fotosInput').click()">
+                        <i class="fas fa-camera"></i> ADJUNTAR FOTOS/VIDEOS
+                    </button>
+                    <input type="file" id="fotosInput" multiple accept="image/*,video/*" style="display:none;">
+                    <div id="fotosPreview" class="fotos-preview"></div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn-secondary" onclick="window.location.href='paso1.html'" style="flex: 1;">
+                            <i class="fas fa-arrow-left"></i> ATRÁS
+                        </button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">
+                            SIGUIENTE <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+                <div id="mensajePaso2" class="mensaje"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="../public/script.js"></script>
+    <script>
+        // Manejo de fotos
+        document.getElementById('fotosInput').addEventListener('change', (e) => {
+            const archivos = e.target.files;
+            const preview = document.getElementById('fotosPreview');
+            
+            for (let archivo of archivos) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(archivo);
+            }
+        });
+
+        // Evento de envío del formulario Paso 2
+        document.getElementById('capturaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const tipo_cobertura = document.getElementById('tipo_cobertura').value;
+            const descripcion_danos = document.getElementById('descripcion_danos').value;
+            const volumen = document.getElementById('volumen').value;
+            
+            if (!tipo_cobertura || !descripcion_danos) {
+                mostrarMensaje('mensajePaso2', 'Por favor completa todos los campos', 'error');
+                return;
+            }
+            
+            // Obtener datos previos
+            let datosInspeccion = JSON.parse(sessionStorage.getItem('datosInspeccion') || '{}');
+            datosInspeccion.cobertura = tipo_cobertura;
+            datosInspeccion.descripcion = descripcion_danos;
+            datosInspeccion.volumen = volumen;
+            
+            // Guardar en sessionStorage
+            sessionStorage.setItem('datosInspeccion', JSON.stringify(datosInspeccion));
+            
+            mostrarMensaje('mensajePaso2', '✓ Datos capturados correctamente', 'success');
+            setTimeout(() => {
+                window.location.href = 'paso3.html';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
