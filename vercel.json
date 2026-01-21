@@ -11,11 +11,5 @@
       "src": "/(.*)",
       "dest": "app.js"
     }
-  ],
-  "env": {
-    "DB_USER": "@db_user",
-    "DB_PASSWORD": "@db_password",
-    "DB_SERVER": "@db_server",
-    "DB_NAME": "@db_name"
-  }
+  ]
 }
