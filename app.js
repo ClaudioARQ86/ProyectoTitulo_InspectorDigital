@@ -7,6 +7,15 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
+// Rutas específicas para servir archivos estáticos
+app.get('/style.css', (req, res) => {
+    res.sendFile(path.join(__dirname, 'style.css'));
+});
+
+app.get('/public/script.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'script.js'));
+});
+
 // Middleware de manejo de errores
 const handleError = (res, error, statusCode = 500) => {
     console.error(error);
