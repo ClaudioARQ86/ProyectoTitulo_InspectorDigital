@@ -8,40 +8,11 @@
   ],
   "routes": [
     {
-      "src": "/login.html",
-      "dest": "/views/login.html"
-    },
-    {
-      "src": "/Index.html",
-      "dest": "/views/Index.html"
-    },
-    {
-      "src": "/paso1.html",
-      "dest": "/views/paso1.html"
-    },
-    {
-      "src": "/paso2.html",
-      "dest": "/views/paso2.html"
-    },
-    {
-      "src": "/paso3.html",
-      "dest": "/views/paso3.html"
-    },
-    {
-      "src": "/about.html",
-      "dest": "/views/about.html"
-    },
-    {
-      "src": "/config.html",
-      "dest": "/views/config.html"
-    },
-    {
-      "src": "/help.html",
-      "dest": "/views/help.html"
-    },
-    {
       "src": "/style.css",
-      "dest": "/public/style.css"
+      "dest": "/public/style.css",
+      "headers": {
+        "Content-Type": "text/css"
+      }
     },
     {
       "src": "/script.js",
@@ -52,8 +23,8 @@
       "dest": "/public/login.js"
     },
     {
-      "src": "/public/(.*)",
-      "dest": "/public/$1"
+      "src": "/(login|Index|paso1|paso2|paso3|about|config|help)\\.html",
+      "dest": "/views/$1.html"
     },
     {
       "src": "/api/(.*)",
@@ -63,5 +34,6 @@
       "src": "/(.*)",
       "dest": "/src/server.js"
     }
-  ]
+  ],
+  "outputDirectory": "."
 }
