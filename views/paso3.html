@@ -19,6 +19,7 @@
         </div>
         <ul class="sidebar-menu">
             <li><a href="/Index.html"><i class="fas fa-home"></i> Volver al Inicio</a></li>
+            <li><a href="#" onclick="cerrarSesion(); return false;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
             <li><hr></li>
             <li><a href="/paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
             <li><a href="/paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
@@ -75,11 +76,11 @@
                         <label for="confirmar_veracidad">Confirmo la veracidad de la información</label>
                     </div>
 
-                    <div style="display: flex; gap: 10px;">
-                        <button type="button" class="btn-secondary" onclick="window.location.href='paso2.html'" style="flex: 1;">
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="button" class="btn-secondary" onclick="window.location.href='paso2.html'" style="flex: 1; box-sizing: border-box; margin-top: 0;">
                             <i class="fas fa-arrow-left"></i> ATRÁS
                         </button>
-                        <button type="submit" class="btn-enviar" style="flex: 1;">
+                        <button type="submit" class="btn-enviar" style="flex: 1; box-sizing: border-box; margin-top: 0;">
                             <i class="fas fa-paper-plane"></i> ENVIAR
                         </button>
                     </div>
@@ -91,14 +92,38 @@
 
     <script src="/script.js"></script>
     <script>
+        // Verificar sesión al cargar
+        verificarSesion();
+
         // Cargar datos al abrir la página
         document.addEventListener('DOMContentLoaded', () => {
-            const datosInspeccion = JSON.parse(sessionStorage.getItem('datosInspeccion') || '{}');
-            
-            document.getElementById('resumen_siniestro').textContent = datosInspeccion.siniestro || '-';
-            document.getElementById('resumen_rut').textContent = datosInspeccion.rut || '-';
-            document.getElementById('resumen_cobertura').textContent = datosInspeccion.cobertura || '-';
-            document.getElementById('resumen_descripcion').textContent = datosInspeccion.descripcion || '-';
+            try {
+                // Obtener datos del caso desde sessionStorage
+                const casoActual = JSON.parse(sessionStorage.getItem('casoActual'));
+                
+                if (!casoActual) {
+                    mostrarMensaje('mensajePaso3', 'No hay información del caso. Redirigiendo...', 'error');
+                    setTimeout(() => window.location.replace('/paso1.html'), 2000);
+                    return;
+                }
+
+                // Mostrar datos en el resumen
+                document.getElementById('resumen_siniestro').textContent = casoActual.idCaso || '-';
+                document.getElementById('resumen_rut').textContent = casoActual.rutAsegurado || '-';
+                document.getElementById('resumen_cobertura').textContent = 
+                    `${casoActual.nombreCompania} - ${casoActual.descripcionCobertura}` || '-';
+                
+                // La descripción podría venir de sessionStorage si la guardamos en paso2
+                const datosInspeccion = JSON.parse(sessionStorage.getItem('datosInspeccion') || '{}');
+
+                
+                document.getElementById('resumen_descripcion').textContent = 
+                    datosInspeccion.descripcion || 'No se encontró descripción';
+                    
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+                mostrarMensaje('mensajePaso3', 'Error al cargar información', 'error');
+            }
         });
 
         // Evento de envío del formulario Paso 3

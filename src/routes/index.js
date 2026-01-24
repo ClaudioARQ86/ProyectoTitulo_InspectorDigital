@@ -5,11 +5,17 @@ const router = express.Router();
 const authRoutes = require('./authRoutes');
 const aseguradoRoutes = require('./aseguradoRoutes');
 const perfilRoutes = require('./perfilRoutes');
+const casoRoutes = require('./casoRoutes');
+const coberturaRoutes = require('./coberturaRoutes');
+const danosRoutes = require('./danosRoutes');
 
 // Definir rutas de la API
 router.use('/auth', authRoutes);
 router.use('/asegurados', aseguradoRoutes);
 router.use('/perfiles', perfilRoutes);
+router.use('/casos', casoRoutes);
+router.use('/coberturas', coberturaRoutes);
+router.use('/danos', danosRoutes);
 
 // Ruta de bienvenida de la API
 router.get('/', (req, res) => {

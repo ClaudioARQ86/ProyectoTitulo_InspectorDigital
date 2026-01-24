@@ -19,6 +19,7 @@
         </div>
         <ul class="sidebar-menu">
             <li><a href="/Index.html"><i class="fas fa-home"></i> Volver al Inicio</a></li>
+            <li><a href="#" onclick="cerrarSesion(); return false;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
             <li><hr></li>
             <li><a href="/paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
             <li><a href="/paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
@@ -54,10 +55,7 @@
                     <div class="form-group">
                         <label for="tipo_cobertura">TIPO DE COBERTURA</label>
                         <select id="tipo_cobertura" required>
-                            <option value="">Seleccione...</option>
-                            <option value="Incendio">Incendio</option>
-                            <option value="Sismo">Sismo</option>
-                            <option value="Inundacion">Inundación</option>
+                            <option value="">Cargando coberturas...</option>
                         </select>
                         <div class="form-icon">
                             <i class="fas fa-check"></i>
@@ -85,12 +83,12 @@
                     </button>
                     <input type="file" id="fotosInput" multiple accept="image/*,video/*" style="display:none;">
                     <div id="fotosPreview" class="fotos-preview"></div>
-                    <div style="display: flex; gap: 10px;">
-                        <button type="button" class="btn-secondary" onclick="window.location.href='paso1.html'" style="flex: 1;">
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="button" class="btn-secondary" onclick="window.location.href='paso1.html'" style="flex: 1; box-sizing: border-box; margin-top: 0;">
                             <i class="fas fa-arrow-left"></i> ATRÁS
                         </button>
-                        <button type="submit" class="btn-primary" style="flex: 1;">
-                            SIGUIENTE <i class="fas fa-arrow-right"></i>
+                        <button type="submit" class="btn-primary" style="flex: 1; box-sizing: border-box; margin-top: 0;">
+                            <i class="fas fa-arrow-right"></i> SIGUIENTE
                         </button>
                     </div>
                 </form>
@@ -101,6 +99,37 @@
 
     <script src="/script.js"></script>
     <script>
+        // Verificar sesión al cargar
+        verificarSesion();
+
+        // Cargar datos del caso al iniciar
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Obtener datos del caso desde sessionStorage
+                const casoActual = JSON.parse(sessionStorage.getItem('casoActual'));
+                
+                if (!casoActual) {
+                    mostrarMensaje('mensajePaso2', 'No hay caso seleccionado. Redirigiendo...', 'error');
+                    setTimeout(() => window.location.replace('/paso1.html'), 2000);
+                    return;
+                }
+
+                // Mostrar solo la cobertura asignada al caso
+                const selectCobertura = document.getElementById('tipo_cobertura');
+                selectCobertura.innerHTML = '';
+                
+                const option = document.createElement('option');
+                option.value = casoActual.idCobertura;
+                option.textContent = `${casoActual.nombreCompania} - ${casoActual.descripcionCobertura}`;
+                option.selected = true;
+                selectCobertura.appendChild(option);
+
+            } catch (error) {
+                console.error('Error al cargar datos del caso:', error);
+                mostrarMensaje('mensajePaso2', 'Error al cargar información del caso', 'error');
+            }
+        });
+
         // Manejo de fotos
         document.getElementById('fotosInput').addEventListener('change', (e) => {
             const archivos = e.target.files;
@@ -121,28 +150,84 @@
         document.getElementById('capturaForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const tipo_cobertura = document.getElementById('tipo_cobertura').value;
             const descripcion_danos = document.getElementById('descripcion_danos').value;
+            const superficie = document.getElementById('superficie').value;
             const volumen = document.getElementById('volumen').value;
+            const fotosInput = document.getElementById('fotosInput');
             
-            if (!tipo_cobertura || !descripcion_danos) {
-                mostrarMensaje('mensajePaso2', 'Por favor completa todos los campos', 'error');
+            if (!descripcion_danos) {
+                mostrarMensaje('mensajePaso2', 'Por favor ingresa la descripción de daños', 'error');
                 return;
             }
-            
-            // Obtener datos previos
-            let datosInspeccion = JSON.parse(sessionStorage.getItem('datosInspeccion') || '{}');
-            datosInspeccion.cobertura = tipo_cobertura;
-            datosInspeccion.descripcion = descripcion_danos;
-            datosInspeccion.volumen = volumen;
-            
-            // Guardar en sessionStorage
-            sessionStorage.setItem('datosInspeccion', JSON.stringify(datosInspeccion));
-            
-            mostrarMensaje('mensajePaso2', '✓ Datos capturados correctamente', 'success');
-            setTimeout(() => {
-                window.location.href = 'paso3.html';
-            }, 1000);
+
+            try {
+                // Obtener datos del caso
+                const casoActual = JSON.parse(sessionStorage.getItem('casoActual'));
+                
+                if (!casoActual || !casoActual.idRecinto) {
+                    mostrarMensaje('mensajePaso2', 'Error: No se encontró información del caso', 'error');
+                    return;
+                }
+
+                // Mostrar indicador de carga
+                const btnSubmit = e.target.querySelector('button[type="submit"]');
+                const textoOriginal = btnSubmit.innerHTML;
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+                // Crear FormData para enviar archivos
+                const formData = new FormData();
+                formData.append('idRecinto', casoActual.idRecinto);
+                formData.append('descripcion', descripcion_danos);
+                formData.append('superficie', superficie || '');
+                formData.append('volumen', volumen || '');
+
+                // Agregar fotos
+                if (fotosInput.files.length > 0) {
+                    for (let i = 0; i < fotosInput.files.length; i++) {
+                        formData.append('fotos', fotosInput.files[i]);
+                    }
+                }
+
+                // Enviar a la API
+                const response = await fetch('/api/danos', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = textoOriginal;
+                    mostrarMensaje('mensajePaso2', data.message || 'Error al guardar los datos', 'error');
+                    return;
+                }
+
+                // Guardar descripción en sessionStorage para paso3
+                let datosInspeccion = {
+                    descripcion: descripcion_danos,
+                    superficie: superficie,
+                    volumen: volumen
+                };
+                sessionStorage.setItem('datosInspeccion', JSON.stringify(datosInspeccion));
+
+                mostrarMensaje('mensajePaso2', '✓ Datos guardados correctamente', 'success');
+                
+                setTimeout(() => {
+                    window.location.replace('/paso3.html');
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error al guardar datos:', error);
+                mostrarMensaje('mensajePaso2', 'Error de conexión. Intenta nuevamente.', 'error');
+                const btnSubmit = e.target.querySelector('button[type="submit"]');
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = 'SIGUIENTE <i class="fas fa-arrow-right"></i>';
+            }
         });
     </script>
 </body>

@@ -19,6 +19,7 @@
         </div>
         <ul class="sidebar-menu">
             <li><a href="/Index.html"><i class="fas fa-home"></i> Volver al Inicio</a></li>
+            <li><a href="#" onclick="cerrarSesion(); return false;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
             <li><hr></li>
             <li><a href="/paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
             <li><a href="/paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
@@ -52,21 +53,19 @@
                 </div>
                 <form id="accesoForm" class="paso-form">
                     <div class="form-group">
-                        <label for="numero_siniestro">NÚMERO DE SINIESTRO</label>
-                        <input type="text" id="numero_siniestro" placeholder="Ej: S-2023-IND-01234" required>
+                        <label for="numero_siniestro">NÚMERO DE CASO (ID)</label>
+                        <input type="text" id="numero_siniestro" placeholder="Ej: 1, 2, 3..." required>
                         <div class="form-icon">
                             <i class="fas fa-check"></i>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="rut">RUT</label>
-                        <input type="text" id="rut" placeholder="12.345.678-9" required>
-                    </div>
-                    <div class="form-group">
                         <label for="rut_asegurado">RUT ASEGURADO</label>
                         <input type="text" id="rut_asegurado" placeholder="12.345.678-9" required>
                     </div>
-                    <button type="submit" class="btn-primary">INGRESAR</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-search"></i> BUSCAR CASO
+                    </button>
                 </form>
                 <div id="mensaje" class="mensaje"></div>
             </section>
@@ -75,30 +74,66 @@
 
     <script src="/script.js"></script>
     <script>
+        // Verificar sesión al cargar
+        verificarSesion();
+
         // Evento de envío del formulario Paso 1
         document.getElementById('accesoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const numero_siniestro = document.getElementById('numero_siniestro').value;
-            const rut = document.getElementById('rut').value;
-            const rut_asegurado = document.getElementById('rut_asegurado').value;
+            const idCaso = document.getElementById('numero_siniestro').value.trim();
+            const rutAsegurado = document.getElementById('rut_asegurado').value.trim();
             
-            if (!numero_siniestro || !rut || !rut_asegurado) {
+            if (!idCaso || !rutAsegurado) {
                 mostrarMensaje('mensaje', 'Por favor completa todos los campos', 'error');
                 return;
             }
-            
-            // Guardar en sessionStorage
-            sessionStorage.setItem('datosInspeccion', JSON.stringify({
-                siniestro: numero_siniestro,
-                rut: rut,
-                rut_asegurado: rut_asegurado
-            }));
-            
-            mostrarMensaje('mensaje', '✓ Datos validados correctamente', 'success');
-            setTimeout(() => {
-                window.location.href = 'paso2.html';
-            }, 1000);
+
+            try {
+                // Mostrar indicador de carga
+                const btnSubmit = e.target.querySelector('button[type="submit"]');
+                const textoOriginal = btnSubmit.innerHTML;
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando...';
+
+                // Llamar a la API para validar el caso
+                const response = await fetch('/api/casos/validar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        idCaso: idCaso,
+                        rutAsegurado: rutAsegurado
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = textoOriginal;
+                    mostrarMensaje('mensaje', data.message || 'Caso no encontrado o RUT Asegurado no coincide', 'error');
+                    return;
+                }
+
+                // Guardar datos del caso en sessionStorage
+                sessionStorage.setItem('casoActual', JSON.stringify(data.data));
+                
+                mostrarMensaje('mensaje', '✓ Caso encontrado: ' + data.data.nombreAsegurado, 'success');
+                
+                setTimeout(() => {
+                    window.location.replace('/paso2.html');
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error al validar caso:', error);
+                mostrarMensaje('mensaje', 'Error de conexión. Intenta nuevamente.', 'error');
+                const btnSubmit = e.target.querySelector('button[type="submit"]');
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<i class="fas fa-search"></i> BUSCAR CASO';
+            }
         });
     </script>
 </body>
