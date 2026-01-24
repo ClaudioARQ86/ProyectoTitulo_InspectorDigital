@@ -10,8 +10,85 @@ let datosInspeccion = {
     firma: ''
 };
 
+// ===== VERIFICACIÓN DE SESIÓN =====
+async function verificarSesion() {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        // Redirigir a login si no hay token
+        if (!window.location.pathname.includes('login.html')) {
+            window.location.href = 'login.html';
+        }
+        return null;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/auth/me`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            mostrarUsuario(data.user);
+            return data.user;
+        } else {
+            // Token inválido, limpiar y redirigir
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            if (!window.location.pathname.includes('login.html')) {
+                window.location.href = 'login.html';
+            }
+            return null;
+        }
+    } catch (error) {
+        console.error('Error verificando sesión:', error);
+        return null;
+    }
+}
+
+function mostrarUsuario(user) {
+    const userMenu = document.getElementById('userMenu');
+    const userName = document.getElementById('userName');
+    
+    if (userMenu && userName) {
+        userMenu.style.display = 'flex';
+        userName.textContent = user.NombreCompleto || user.NombreUsuario || 'Usuario';
+    }
+}
+
+// ===== LOGOUT =====
+async function cerrarSesion() {
+    try {
+        await fetch(`${API_URL}/auth/logout`, {
+            method: 'POST'
+        });
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+    }
+
+    // Limpiar datos locales
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Redirigir a login
+    window.location.href = 'login.html';
+}
+
 // ===== MENU LATERAL RESPONSIVO =====
 document.addEventListener('DOMContentLoaded', () => {
+    // Verificar sesión al cargar la página
+    if (!window.location.pathname.includes('login.html')) {
+        verificarSesion();
+    }
+
+    // Botón de logout
+    const btnLogout = document.getElementById('btnLogout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', cerrarSesion);
+    }
+
     const menuToggle = document.querySelector('.menu-toggle');
     const sidebar = document.querySelector('.sidebar');
     const sidebarOverlay = document.querySelector('.sidebar-overlay');
