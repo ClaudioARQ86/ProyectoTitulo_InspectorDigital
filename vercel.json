@@ -2,14 +2,66 @@
   "version": 2,
   "builds": [
     {
-      "src": "app.js",
+      "src": "src/server.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
+      "src": "/login.html",
+      "dest": "/views/login.html"
+    },
+    {
+      "src": "/Index.html",
+      "dest": "/views/Index.html"
+    },
+    {
+      "src": "/paso1.html",
+      "dest": "/views/paso1.html"
+    },
+    {
+      "src": "/paso2.html",
+      "dest": "/views/paso2.html"
+    },
+    {
+      "src": "/paso3.html",
+      "dest": "/views/paso3.html"
+    },
+    {
+      "src": "/about.html",
+      "dest": "/views/about.html"
+    },
+    {
+      "src": "/config.html",
+      "dest": "/views/config.html"
+    },
+    {
+      "src": "/help.html",
+      "dest": "/views/help.html"
+    },
+    {
+      "src": "/style.css",
+      "dest": "/public/style.css"
+    },
+    {
+      "src": "/script.js",
+      "dest": "/public/script.js"
+    },
+    {
+      "src": "/login.js",
+      "dest": "/public/login.js"
+    },
+    {
+      "src": "/public/(.*)",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/src/server.js"
+    },
+    {
       "src": "/(.*)",
-      "dest": "app.js"
+      "dest": "/src/server.js"
     }
   ]
 }

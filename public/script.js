@@ -17,7 +17,7 @@ async function verificarSesion() {
     if (!token) {
         // Redirigir a login si no hay token
         if (!window.location.pathname.includes('login.html')) {
-            window.location.href = 'login.html';
+            window.location.replace('login.html');
         }
         return null;
     }
@@ -38,7 +38,7 @@ async function verificarSesion() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             if (!window.location.pathname.includes('login.html')) {
-                window.location.href = 'login.html';
+                window.location.replace('login.html');
             }
             return null;
         }
@@ -73,7 +73,7 @@ async function cerrarSesion() {
     localStorage.removeItem('user');
     
     // Redirigir a login
-    window.location.href = 'login.html';
+    window.location.replace('login.html');
 }
 
 // ===== MENU LATERAL RESPONSIVO =====

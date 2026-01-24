@@ -14,6 +14,19 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname)));
 
+// Rutas específicas para servir archivos HTML
+app.get('/login.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+app.get('/Index.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Index.html'));
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
+
 // Rutas específicas para servir archivos estáticos
 app.get('/style.css', (req, res) => {
     res.sendFile(path.join(__dirname, 'style.css'));
@@ -21,6 +34,10 @@ app.get('/style.css', (req, res) => {
 
 app.get('/public/script.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'script.js'));
+});
+
+app.get('/public/login.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.js'));
 });
 
 // Middleware de manejo de errores

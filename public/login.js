@@ -1,7 +1,7 @@
 // public/login.js
 document.addEventListener('DOMContentLoaded', () => {
     // Elementos del DOM
-    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabButtons = document.querySelectorAll('.auth-tab-button');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
     const loginAlert = document.getElementById('loginAlert');
@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Verificar si ya hay sesión activa
     checkSession();
+
+    // Cargar perfiles para el selector
+    loadPerfiles();
 
     // Manejo de pestañas
     tabButtons.forEach(button => {
@@ -93,17 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Guardar token si "recordarme" está activado
-                if (rememberMe) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                }
+                // Guardar token SIEMPRE (necesario para mantener sesión)
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
 
                 showAlert(loginAlert, 'Login exitoso. Redirigiendo...', 'success');
                 
-                // Redirigir a la página principal
+                // Redirigir a la página principal (replace evita volver con botón atrás)
                 setTimeout(() => {
-                    window.location.href = 'Index.html';
+                    window.location.replace('Index.html');
                 }, 1500);
             } else {
                 showAlert(loginAlert, data.error || 'Error al iniciar sesión', 'error');
@@ -125,11 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const fullName = document.getElementById('registerName').value.trim();
         const username = document.getElementById('registerUsername').value.trim();
         const email = document.getElementById('registerEmail').value.trim();
+        const perfilId = document.getElementById('registerPerfil').value;
         const password = document.getElementById('registerPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
 
         // Validaciones
-        if (!fullName || !username || !email || !password || !confirmPassword) {
+        if (!fullName || !username || !email || !perfilId || !password || !confirmPassword) {
             showAlert(registerAlert, 'Por favor complete todos los campos', 'error');
             return;
         }
@@ -163,7 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     fullName,
                     username,
                     email,
-                    password
+                    password,
+                    perfilId: parseInt(perfilId)
                 })
             });
 
@@ -248,7 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     // Ya hay una sesión activa, redirigir
-                    window.location.href = 'Index.html';
+                    window.location.replace('Index.html');
+                    return true;
                 } else {
                     // Token inválido, limpiarlo
                     localStorage.removeItem('token');
@@ -257,6 +261,26 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Error verificando sesión:', error);
             }
+        }
+        return false;
+    }
+
+    async function loadPerfiles() {
+        try {
+            const response = await fetch('/api/perfiles');
+            if (response.ok) {
+                const perfiles = await response.json();
+                const selectPerfil = document.getElementById('registerPerfil');
+                
+                perfiles.forEach(perfil => {
+                    const option = document.createElement('option');
+                    option.value = perfil.IDPerfil;
+                    option.textContent = perfil.Tipo;
+                    selectPerfil.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Error cargando perfiles:', error);
         }
     }
 });

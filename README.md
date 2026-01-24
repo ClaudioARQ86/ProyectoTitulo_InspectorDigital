@@ -1,17 +1,47 @@
 # Inspector Digital - Sistema de Siniestros
 
-Sistema integral de gestión de siniestros desarrollado con Node.js, HTML, CSS y Azure SQL Database.
+Sistema integral de gestión de siniestros desarrollado con **arquitectura modular MVC** usando Node.js, Express y Azure SQL Database.
 
-## Características
+## 🌐 Demo en Vivo
 
+**URL:** https://proyecto-titulo-inspector-digital-f.vercel.app/login.html
+
+## ⭐ Características Principales
+
+- ✅ **Arquitectura Modular MVC** (Model-View-Controller)
+- ✅ **Sistema de Login y Autenticación** (JWT)
 - ✅ Gestión de Asegurados
 - ✅ Registro de Bienes
 - ✅ Administración de Recintos
 - ✅ Registro de Daños
 - ✅ Gestión de Casos
 - ✅ Interfaz responsive
-- ✅ Backend seguro con Node.js
+- ✅ Backend seguro con Node.js/Express
 - ✅ Base de datos Azure SQL
+- ✅ Desplegado en Vercel
+
+## 🏗️ Arquitectura Modular
+
+```
+src/
+├── config/         # Configuraciones (BD, JWT, etc.)
+├── controllers/    # Lógica de negocio
+├── routes/         # Definición de endpoints
+├── middleware/     # Auth, errores, validaciones
+└── utils/          # Funciones auxiliares
+```
+
+📖 **Ver documentación completa:** [docs/ESTRUCTURA_MODULAR.md](docs/ESTRUCTURA_MODULAR.md)
+
+## 🔐 Sistema de Autenticación
+
+- Registro de usuarios con validación
+- Login con JWT (JSON Web Tokens)
+- Contraseñas encriptadas con bcrypt
+- Sesiones persistentes
+- Protección de rutas
+
+📖 **Documentación del Login:** Ver [LOGIN_README.md](LOGIN_README.md)
 
 ## Requisitos
 
@@ -19,6 +49,14 @@ Sistema integral de gestión de siniestros desarrollado con Node.js, HTML, CSS y
 - npm o yarn
 - Acceso a Azure SQL Database
 - Navegador moderno (Chrome, Firefox, Safari, Edge)
+
+## 🚀 Inicio Rápido
+
+### Opción 1: Usar la versión desplegada
+
+Simplemente visita: https://proyecto-titulo-inspector-digital-f.vercel.app/login.html
+
+### Opción 2: Desarrollo Local
 
 ## Instalación
 
@@ -94,6 +132,19 @@ ProyectoTitulo_InspectorDigital/
 - `GET /api/asegurados/:id` - Obtener un asegurado
 - `POST /api/asegurados` - Crear nuevo asegurado
 
+### Autenticación
+
+- `POST /api/auth/register` - Registrar nuevo usuario
+- `POST /api/auth/login` - Iniciar sesión
+- `POST /api/auth/logout` - Cerrar sesión
+- `GET /api/auth/me` - Obtener usuario actual (requiere autenticación)
+
+### Asegurados
+
+- `GET /api/asegurados` - Obtener todos los asegurados
+- `GET /api/asegurados/:id` - Obtener asegurado específico
+- `POST /api/asegurados` - Crear nuevo asegurado
+
 ### Bienes
 
 - `GET /api/asegurados/:id/bienes` - Obtener bienes de un asegurado
@@ -113,6 +164,22 @@ ProyectoTitulo_InspectorDigital/
 
 - `GET /api/casos` - Obtener todos los casos
 - `POST /api/casos` - Crear nuevo caso
+
+## 📚 Documentación Adicional
+
+- **[LOGIN_README.md](LOGIN_README.md)** - Documentación completa del sistema de autenticación
+- **[GUIA_RAPIDA_LOGIN.md](GUIA_RAPIDA_LOGIN.md)** - Guía rápida de inicio con login
+- **[DESPLIEGUE_VERCEL.md](DESPLIEGUE_VERCEL.md)** - Guía para desplegar en Vercel
+- **[INSTALAR_NODEJS.md](INSTALAR_NODEJS.md)** - Guía para instalar Node.js
+
+## 🚀 Desplegar en Vercel
+
+1. Haz fork del repositorio
+2. Importa el proyecto en Vercel
+3. Configura las variables de entorno (ver [DESPLIEGUE_VERCEL.md](DESPLIEGUE_VERCEL.md))
+4. ¡Despliega!
+
+Ver guía detallada en [DESPLIEGUE_VERCEL.md](DESPLIEGUE_VERCEL.md)
 
 ## Tecnologías Utilizadas
 

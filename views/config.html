@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuración - Inspector Digital</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <!-- MENÚ LATERAL MÓVIL -->
@@ -18,13 +18,15 @@
             </button>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
-            <li><a href="paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
-            <li><a href="paso3.html"><i class="fas fa-check"></i> Finalizar</a></li>
+            <li><a href="/Index.html"><i class="fas fa-home"></i> Volver al Inicio</a></li>
             <li><hr></li>
-            <li><a href="about.html"><i class="fas fa-info-circle"></i> Sobre la Aplicación</a></li>
-            <li><a href="config.html"><i class="fas fa-cog"></i> Configuración</a></li>
-            <li><a href="help.html"><i class="fas fa-question-circle"></i> Ayuda</a></li>
+            <li><a href="/paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
+            <li><a href="/paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
+            <li><a href="/paso3.html"><i class="fas fa-check"></i> Finalizar</a></li>
+            <li><hr></li>
+            <li><a href="/about.html"><i class="fas fa-info-circle"></i> Sobre la Aplicación</a></li>
+            <li><a href="/config.html"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="/help.html"><i class="fas fa-question-circle"></i> Ayuda</a></li>
         </ul>
     </nav>
 
@@ -34,8 +36,16 @@
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1>INSPECCIÓN DIGITAL ASTIDA</h1>
+                <a href="/Index.html" style="text-decoration: none; color: inherit; flex: 1;">
+                    <h1>INSPECCIÓN DIGITAL ASTIDA</h1>
+                </a>
                 <div class="header-space"></div>
+            </div>
+            <div class="user-menu">
+                <span class="user-name" id="userName">Usuario</span>
+                <button class="btn-logout" onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
             </div>
         </header>
 
@@ -115,7 +125,7 @@
         </div>
     </div>
 
-    <script src="../public/script.js"></script>
+    <script src="/script.js"></script>
     <script>
         // Botón de sincronización
         document.getElementById('syncBtn').addEventListener('click', (e) => {

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inspector Digital - Sistema de Siniestros</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <!-- MENÚ LATERAL MÓVIL -->
@@ -18,13 +18,15 @@
             </button>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="pages/paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
-            <li><a href="pages/paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
-            <li><a href="pages/paso3.html"><i class="fas fa-check"></i> Finalizar</a></li>
+            <li><a href="/Index.html"><i class="fas fa-home"></i> Volver al Inicio</a></li>
             <li><hr></li>
-            <li><a href="pages/about.html"><i class="fas fa-info-circle"></i> Sobre la Aplicación</a></li>
-            <li><a href="pages/config.html"><i class="fas fa-cog"></i> Configuración</a></li>
-            <li><a href="pages/help.html"><i class="fas fa-question-circle"></i> Ayuda</a></li>
+            <li><a href="/paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
+            <li><a href="/paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
+            <li><a href="/paso3.html"><i class="fas fa-check"></i> Finalizar</a></li>
+            <li><hr></li>
+            <li><a href="/about.html"><i class="fas fa-info-circle"></i> Sobre la Aplicación</a></li>
+            <li><a href="/config.html"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="/help.html"><i class="fas fa-question-circle"></i> Ayuda</a></li>
         </ul>
     </nav>
 
@@ -34,7 +36,9 @@
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1>INSPECCIÓN DIGITAL ASTIDA</h1>
+                <a href="/Index.html" style="text-decoration: none; color: inherit; flex: 1;">
+                    <h1>INSPECCIÓN DIGITAL ASTIDA</h1>
+                </a>
                 <div class="header-space">
                     <div class="user-menu" id="userMenu" style="display: none;">
                         <span class="user-name" id="userName"></span>
@@ -55,11 +59,11 @@
                 <p>Sistema integral de gestión de siniestros</p>
                 
                 <div class="quick-access">
-                    <a href="pages/paso1.html" class="quick-btn">
+                    <a href="/paso1.html" class="quick-btn">
                         <i class="fas fa-lock"></i>
                         <span>Nueva Inspección</span>
                     </a>
-                    <a href="pages/help.html" class="quick-btn secondary">
+                    <a href="/help.html" class="quick-btn secondary">
                         <i class="fas fa-question-circle"></i>
                         <span>Ver Ayuda</span>
                     </a>
@@ -73,6 +77,6 @@
         </div>
     </div>
 
-    <script src="public/script.js"></script>
+    <script src="/script.js"></script>
 </body>
 </html>

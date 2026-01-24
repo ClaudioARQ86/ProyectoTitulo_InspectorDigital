@@ -1,0 +1,228 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║      🏗️  ESTRUCTURA MODULAR - INSPECTOR DIGITAL v2.0                          ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+📦 ProyectoTitulo_InspectorDigital/
+│
+├── 📂 src/                                    ← ⭐ BACKEND (Node.js/Express)
+│   │
+│   ├── 📂 config/                             ← ⚙️ Configuraciones
+│   │   ├── 📄 config.js                       │  Variables globales
+│   │   └── 📄 database.js                     │  Conexión a Azure SQL
+│   │
+│   ├── 📂 controllers/                        ← 🎮 Controladores (Lógica)
+│   │   ├── 📄 authController.js               │  Login, registro, sesión
+│   │   ├── 📄 aseguradoController.js          │  CRUD de asegurados
+│   │   ├── 📄 bienesController.js             │  CRUD de bienes
+│   │   └── 📄 casosController.js              │  CRUD de casos
+│   │
+│   ├── 📂 middleware/                         ← 🛡️ Middleware
+│   │   ├── 📄 auth.js                         │  Autenticación JWT
+│   │   └── 📄 errorHandler.js                 │  Manejo de errores
+│   │
+│   ├── 📂 routes/                             ← 🛣️ Rutas de la API
+│   │   ├── 📄 index.js                        │  Router principal
+│   │   ├── 📄 authRoutes.js                   │  POST /api/auth/*
+│   │   ├── 📄 aseguradoRoutes.js              │  GET/POST /api/asegurados
+│   │   ├── 📄 bienesRoutes.js                 │  GET/POST /api/bienes
+│   │   └── 📄 casosRoutes.js                  │  GET/POST /api/casos
+│   │
+│   ├── 📂 utils/                              ← 🔧 Utilidades
+│   │   ├── 📄 validators.js                   │  Validadores
+│   │   └── 📄 helpers.js                      │  Funciones auxiliares
+│   │
+│   ├── 📄 app.js                              ← 🚀 Configuración de Express
+│   └── 📄 server.js                           ← 🎯 Punto de entrada
+│
+├── 📂 views/                                   ← 🎨 FRONTEND (HTML)
+│   ├── 📄 login.html                          │  Página de login
+│   ├── 📄 Index.html                          │  Página principal
+│   └── 📂 pages/                              │  Páginas adicionales
+│       ├── 📄 about.html                      │  Acerca de
+│       ├── 📄 config.html                     │  Configuración
+│       ├── 📄 help.html                       │  Ayuda
+│       ├── 📄 paso1.html                      │  Paso 1
+│       ├── 📄 paso2.html                      │  Paso 2
+│       └── 📄 paso3.html                      │  Paso 3
+│
+├── 📂 public/                                  ← 📦 Archivos estáticos
+│   ├── 📄 style.css                           │  Estilos CSS
+│   ├── 📄 script.js                           │  Scripts generales
+│   └── 📄 login.js                            │  Script del login
+│
+├── 📂 docs/                                    ← 📚 Documentación
+│   ├── 📄 ESTRUCTURA_MODULAR.md               │  Documentación completa
+│   ├── 📄 MIGRACION.md                        │  Guía de migración
+│   ├── 📄 LOGIN_README.md                     │  Documentación del login
+│   ├── 📄 GUIA_RAPIDA_LOGIN.md                │  Guía rápida
+│   ├── 📄 DESPLIEGUE_VERCEL.md                │  Guía de despliegue
+│   └── 📄 INSTALAR_NODEJS.md                  │  Instalación de Node.js
+│
+├── 📂 ANEXOS/                                  ← 💾 Scripts SQL
+│   ├── 📄 script.sql                          │  Script principal de BD
+│   └── 📄 login-setup.sql                     │  Configuración del login
+│
+├── 📄 .env.example                            ← ⚙️ Ejemplo de variables de entorno
+├── 📄 .gitignore                              ← 🚫 Archivos ignorados por Git
+├── 📄 .vercelignore                           ← 🚫 Archivos ignorados por Vercel
+├── 📄 package.json                            ← 📦 Dependencias del proyecto
+├── 📄 vercel.json                             ← ☁️ Configuración de Vercel
+└── 📄 README.md                               ← 📖 Documentación principal
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔄 FLUJO DE UNA PETICIÓN HTTP
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│  1️⃣  Cliente (Browser)                                                      │
+│       │                                                                     │
+│       │ HTTP Request: GET /api/asegurados                                  │
+│       ▼                                                                     │
+│                                                                             │
+│  2️⃣  src/server.js                                                          │
+│       │  • Inicia el servidor                                              │
+│       │  • Escucha en puerto 3000                                          │
+│       ▼                                                                     │
+│                                                                             │
+│  3️⃣  src/app.js                                                             │
+│       │  • Middleware (JSON, cookies)                                      │
+│       │  • Rutas estáticas                                                 │
+│       ▼                                                                     │
+│                                                                             │
+│  4️⃣  src/routes/index.js                                                    │
+│       │  • Distribuye a /api/asegurados                                    │
+│       ▼                                                                     │
+│                                                                             │
+│  5️⃣  src/routes/aseguradoRoutes.js                                          │
+│       │  • Define GET /                                                    │
+│       │  • Middleware (auth) opcional                                      │
+│       ▼                                                                     │
+│                                                                             │
+│  6️⃣  src/middleware/auth.js (si es protegida)                               │
+│       │  • Verifica JWT                                                    │
+│       │  • Agrega req.user                                                 │
+│       ▼                                                                     │
+│                                                                             │
+│  7️⃣  src/controllers/aseguradoController.js                                 │
+│       │  • getAllAsegurados()                                              │
+│       │  • Lógica de negocio                                               │
+│       ▼                                                                     │
+│                                                                             │
+│  8️⃣  src/config/database.js                                                 │
+│       │  • getConnection()                                                 │
+│       │  • Query a Azure SQL                                               │
+│       ▼                                                                     │
+│                                                                             │
+│  9️⃣  Azure SQL Database                                                     │
+│       │  • SELECT * FROM Asegurado                                         │
+│       ▼                                                                     │
+│                                                                             │
+│  🔟 Response ← ← ← ← ← ← ← ← ← ← ←                                        │
+│       │                                                                     │
+│       │ JSON: [{ id: 1, nombre: "..." }, ...]                             │
+│       ▼                                                                     │
+│                                                                             │
+│  Cliente (Browser)                                                          │
+│       • Recibe datos                                                        │
+│       • Renderiza en pantalla                                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 PRINCIPIOS DE LA ARQUITECTURA
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│  🎯 Separación de Responsabilidades                                         │
+│     • config/      → Configuración                                         │
+│     • controllers/ → Lógica de negocio                                     │
+│     • routes/      → Definición de endpoints                               │
+│     • middleware/  → Funciones intermedias                                 │
+│     • views/       → Interfaz de usuario                                   │
+│                                                                             │
+│  📦 Modularidad                                                             │
+│     • Cada módulo es independiente                                         │
+│     • Fácil de mantener y testear                                          │
+│     • Código reutilizable                                                  │
+│                                                                             │
+│  🚀 Escalabilidad                                                           │
+│     • Fácil agregar nuevos endpoints                                       │
+│     • Estructura clara para equipos                                        │
+│     • Preparado para crecer                                                │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+
+⚡ COMANDOS PRINCIPALES
+
+┌──────────────────────────────────────┬──────────────────────────────────────┐
+│ Comando                              │ Descripción                          │
+├──────────────────────────────────────┼──────────────────────────────────────┤
+│ npm install                          │ Instalar dependencias                │
+│ npm start                            │ Iniciar servidor (producción)        │
+│ npm run dev                          │ Iniciar servidor (desarrollo)        │
+│ node src/server.js                   │ Iniciar servidor directo             │
+│ nodemon src/server.js                │ Iniciar con auto-reload              │
+└──────────────────────────────────────┴──────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🌐 ENDPOINTS DE LA API
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                                                                           │
+│  🔐 Autenticación                                                         │
+│     POST   /api/auth/register     • Registrar usuario                   │
+│     POST   /api/auth/login        • Iniciar sesión                      │
+│     POST   /api/auth/logout       • Cerrar sesión                       │
+│     GET    /api/auth/me           • Usuario actual (protegida)          │
+│                                                                           │
+│  👤 Asegurados                                                            │
+│     GET    /api/asegurados         • Listar todos                       │
+│     GET    /api/asegurados/:id     • Obtener uno                        │
+│     POST   /api/asegurados         • Crear nuevo                        │
+│                                                                           │
+│  🏠 Bienes                                                                │
+│     GET    /api/bienes             • Listar todos                       │
+│     POST   /api/bienes             • Crear nuevo                        │
+│                                                                           │
+│  📂 Casos                                                                 │
+│     GET    /api/casos              • Listar todos                       │
+│     POST   /api/casos              • Crear nuevo                        │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✨ VENTAJAS DE LA NUEVA ESTRUCTURA
+
+┌─────────────────────────────────────┬─────────────────────────────────────┐
+│ ❌ Antes (Monolítico)               │ ✅ Ahora (Modular)                  │
+├─────────────────────────────────────┼─────────────────────────────────────┤
+│ • Un solo archivo (400+ líneas)    │ • Múltiples archivos pequeños      │
+│ • Todo mezclado                     │ • Separación clara                  │
+│ • Difícil de mantener               │ • Fácil de mantener                 │
+│ • Difícil de testear                │ • Fácil de testear                  │
+│ • Conflictos en Git                 │ • Trabajo en equipo sin conflictos  │
+│ • Difícil de escalar                │ • Escalable                         │
+└─────────────────────────────────────┴─────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📚 DOCUMENTACIÓN
+
+• docs/ESTRUCTURA_MODULAR.md  →  Documentación completa
+• docs/MIGRACION.md            →  Guía de migración
+• docs/LOGIN_README.md         →  Sistema de autenticación
+• docs/DESPLIEGUE_VERCEL.md    →  Despliegue en producción
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                       🎉 ¡Estructura Modular Lista! 🎉
+
+═══════════════════════════════════════════════════════════════════════════════
