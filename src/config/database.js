@@ -20,27 +20,62 @@ const dbConfig = {
 };
 
 let pool = null;
+let connecting = false;
 
 const getConnection = async () => {
     try {
-        if (!pool) {
-            pool = new sql.ConnectionPool(dbConfig);
-            await pool.connect();
-            console.log('✅ Conexión a Azure SQL establecida');
+        // Si ya hay un pool conectado, verificar si está disponible
+        if (pool && pool.connected) {
+            return pool;
         }
+
+        // Si ya se está conectando, esperar
+        if (connecting) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            return getConnection();
+        }
+
+        // Iniciar nueva conexión
+        connecting = true;
+        
+        // Cerrar pool anterior si existe pero no está conectado
+        if (pool) {
+            try {
+                await pool.close();
+            } catch (err) {
+                // Ignorar errores al cerrar
+            }
+            pool = null;
+        }
+
+        pool = new sql.ConnectionPool(dbConfig);
+        
+        pool.on('error', err => {
+            console.error('❌ Error en el pool de conexiones:', err.message);
+            pool = null;
+        });
+
+        await pool.connect();
+        connecting = false;
+        console.log('✅ Conexión a Azure SQL establecida');
+        
         return pool;
     } catch (error) {
+        connecting = false;
+        pool = null;
         console.error('❌ Error de conexión a Azure SQL:', error.message);
         throw error;
     }
 };
 
-// Cerrar conexión al terminar
-process.on('exit', async () => {
-    if (pool) {
-        await pool.close();
-        console.log('🔌 Conexión a Azure SQL cerrada');
-    }
-});
+// Cerrar conexión al terminar (solo para entornos no serverless)
+if (process.env.NODE_ENV !== 'production') {
+    process.on('exit', async () => {
+        if (pool) {
+            await pool.close();
+            console.log('🔌 Conexión a Azure SQL cerrada');
+        }
+    });
+}
 
 module.exports = { getConnection, sql };
