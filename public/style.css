@@ -141,9 +141,8 @@ html, body {
 /* Vista móvil */
 @media (max-width: 1024px) {
     .app-container {
-        max-width: 500px;
-        margin: 0 auto;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        margin: 0;
     }
 
     body.sidebar-open {
@@ -154,8 +153,8 @@ html, body {
 /* Vista desktop */
 @media (min-width: 1025px) {
     .app-container {
-        max-width: 1200px;
-        margin: 0 auto;
+        width: 100%;
+        margin: 0;
         border-radius: 0;
         box-shadow: none;
     }
@@ -314,8 +313,9 @@ html, body {
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 800px;
+    max-width: min(800px, 96vw);
     margin: 0 auto;
+    padding: clamp(10px, 3vw, 20px);
 }
 
 @keyframes slideIn {
@@ -333,8 +333,9 @@ html, body {
     display: flex !important;
     flex-direction: column;
     width: 100%;
-    max-width: 800px;
+    max-width: min(800px, 96vw);
     margin: 0 auto;
+    padding: clamp(10px, 3vw, 20px);
 }
 
 /* ========================================
@@ -1316,8 +1317,9 @@ html, body {
 
 .auth-container {
     max-width: 600px;
-    margin: 30px auto;
-    padding: 0 20px;
+    width: 100%;
+    margin: clamp(10px, 3vw, 30px) auto;
+    padding: 0 clamp(15px, 5vw, 20px);
 }
 
 .auth-box {
