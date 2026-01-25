@@ -31,11 +31,11 @@ app.get('/Index.html', (req, res) => {
     res.sendFile(path.join(__dirname, '../views/Index.html'));
 });
 
-// Páginas adicionales (paso1, paso2, paso3, about, config, help)
+// Páginas adicionales (paso1, paso2, paso3, about, config, help, casos-inspeccionados)
 app.get('/:page.html', (req, res, next) => {
     const pageName = req.params.page;
     // Solo servir archivos HTML específicos de views/
-    const allowedPages = ['paso1', 'paso2', 'paso3', 'about', 'config', 'help'];
+    const allowedPages = ['paso1', 'paso2', 'paso3', 'about', 'config', 'help', 'casos-inspeccionados'];
     
     if (allowedPages.includes(pageName)) {
         res.sendFile(path.join(__dirname, '../views', `${pageName}.html`), (err) => {

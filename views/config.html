@@ -21,9 +21,8 @@
             <li><a href="/Index.html"><i class="fas fa-home"></i> Volver al Inicio</a></li>
             <li><a href="#" onclick="cerrarSesion(); return false;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
             <li><hr></li>
-            <li><a href="/paso1.html"><i class="fas fa-lock"></i> Acceso</a></li>
-            <li><a href="/paso2.html"><i class="fas fa-edit"></i> Captura de Datos</a></li>
-            <li><a href="/paso3.html"><i class="fas fa-check"></i> Finalizar</a></li>
+            <li><a href="/paso1.html"><i class="fas fa-lock"></i> Buscar Caso</a></li>
+            <li><a href="/casos-inspeccionados.html"><i class="fas fa-list-alt"></i> Casos Inspeccionados</a></li>
             <li><hr></li>
             <li><a href="/about.html"><i class="fas fa-info-circle"></i> Sobre la Aplicación</a></li>
             <li><a href="/config.html"><i class="fas fa-cog"></i> Configuración</a></li>
@@ -75,26 +74,6 @@
                             <label for="servidor">Servidor:</label>
                             <input type="text" id="servidor" placeholder="Servidor Azure SQL" disabled value="azure-sql.database.windows.net">
                         </div>
-                        <div class="config-item">
-                            <label for="basedatos">Base de Datos:</label>
-                            <input type="text" id="basedatos" placeholder="Nombre de base de datos" disabled value="InspectorDigital">
-                        </div>
-                    </div>
-
-                    <div class="config-group">
-                        <h3><i class="fas fa-download"></i> Sincronización</h3>
-                        <div class="config-item checkbox">
-                            <input type="checkbox" id="sync-auto" checked>
-                            <label for="sync-auto">Sincronización automática</label>
-                        </div>
-                        <div class="config-item checkbox">
-                            <input type="checkbox" id="sync-offline" checked>
-                            <label for="sync-offline">Modo offline (guardar en local)</label>
-                        </div>
-                        <button type="button" class="btn-primary" id="syncBtn" style="margin-top: 15px;">
-                            <i class="fas fa-sync"></i> Sincronizar Ahora
-                        </button>
-                        <div id="sync-mensaje" class="mensaje"></div>
                     </div>
 
                     <div class="config-group">
@@ -103,18 +82,8 @@
                             <input type="checkbox" id="notif-completar" checked>
                             <label for="notif-completar">Recordar completar inspección</label>
                         </div>
-                        <div class="config-item checkbox">
-                            <input type="checkbox" id="notif-sync" checked>
-                            <label for="notif-sync">Notificar al sincronizar</label>
-                        </div>
                     </div>
 
-                    <div class="config-group">
-                        <h3><i class="fas fa-user-circle"></i> Perfil</h3>
-                        <button type="button" class="btn-secondary" onclick="alert('Función de cerrar sesión próximamente')">
-                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                        </button>
-                    </div>
                 </div>
             </section>
         </div>

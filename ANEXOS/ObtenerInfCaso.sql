@@ -1,19 +1,17 @@
-USE [free-sql-db-2451406]
-GO
-
 DECLARE
-    @idCaso int = 101,
-    @rutAsegurado varchar(10) = '16428250-3'
+    @usuario int = 2
 
-SELECT */*
-    c.IDCaso as IDCaso,
-    co.Nombre as NombreCompania,
-    cb.Descripcion as DescripcionCobertura,
-    c.IDAsegurado as IDAsegurado,
-    CONCAT(a.RUT, '-', a.DV) as RUTAsegurado,
-    a.Nombre as NombreAsegurado,
-    a.ApellidoMaterno as ApellidoMaternoAsegurado,
-    a.ApellidoPaterno as ApellidoPaternoAsegurado*/
+SELECT 
+    u.NombreUsuario,
+    p.Tipo,
+    c.IDCaso,
+    CONCAT(a.Nombre, ' ', a.ApellidoMaterno, ' ', a.ApellidoPaterno) AS NombreAsegurado,
+    CONCAT(a.Rut, '-', a.DV) AS RutAsegurado,
+    co.Nombre,
+    cb.Descripcion AS Cobertura,
+    b.Descripcion AS BienAsegurado,
+    r.Direccion AS Recinto,
+    d.Descripcion AS Danos
 FROM Caso c
     INNER JOIN Asegurado a ON c.IDAsegurado = a.IDAsegurado
     INNER JOIN Compania co ON c.IDCompania = co.IDCompania
@@ -22,10 +20,11 @@ FROM Caso c
     LEFT JOIN Recinto r ON b.IDBienes = r.IDBienes
     LEFT JOIN Danos d ON r.IDRecinto = d.IDRecinto
     LEFT JOIN Fotos f ON d.IDDanos = f.IDDanos
-WHERE c.IDCaso = @idCaso AND CONCAT(a.RUT, '-', a.DV) = @rutAsegurado
+    INNER JOIN CasoAsignado ca ON c.IDCaso = ca.IDCaso
+    INNER JOIN Perfil p ON p.IDPerfil = ca.IDPerfil
+    INNER JOIN Usuario u ON u.IDPerfil = p.IDPerfil
 
+WHERE IDUsuario = @usuario
 
-ALTER TABLE Danos
-ADD 
-    Superficie DECIMAL(10,2) NULL,
-    Volumen DECIMAL(10,2) NULL;
+--select * from usuario
+
