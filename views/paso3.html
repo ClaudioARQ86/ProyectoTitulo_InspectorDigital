@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <!-- MENÚ LATERAL MÓVIL -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -44,7 +43,6 @@
         </header>
 
         <div class="app-main">
-            <!-- SECCIÓN FINALIZAR - PASO 3 -->
             <section class="tab-content active paso-section">
                 <div class="paso-header">
                     <i class="fas fa-check-circle"></i>
@@ -91,13 +89,10 @@
 
     <script src="/script.js"></script>
     <script>
-        // Verificar sesión al cargar
         verificarSesion();
 
-        // Cargar datos al abrir la página
         document.addEventListener('DOMContentLoaded', () => {
             try {
-                // Obtener datos del caso desde sessionStorage
                 const casoActual = JSON.parse(sessionStorage.getItem('casoActual'));
                 
                 if (!casoActual) {
@@ -106,13 +101,11 @@
                     return;
                 }
 
-                // Mostrar datos en el resumen
                 document.getElementById('resumen_siniestro').textContent = casoActual.idCaso || '-';
                 document.getElementById('resumen_rut').textContent = casoActual.rutAsegurado || '-';
                 document.getElementById('resumen_cobertura').textContent = 
                     `${casoActual.nombreCompania} - ${casoActual.descripcionCobertura}` || '-';
                 
-                // La descripción podría venir de sessionStorage si la guardamos en paso2
                 const datosInspeccion = JSON.parse(sessionStorage.getItem('datosInspeccion') || '{}');
 
                 
@@ -125,7 +118,6 @@
             }
         });
 
-        // Evento de envío del formulario Paso 3
         document.getElementById('finalizarForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -139,9 +131,7 @@
             mostrarMensaje('mensajePaso3', '✓ Inspección enviada exitosamente', 'success');
             
             setTimeout(() => {
-                // Limpiar sessionStorage
                 sessionStorage.removeItem('datosInspeccion');
-                // Ir a inicio
                 window.location.href = '../Index.html';
             }, 2000);
         });

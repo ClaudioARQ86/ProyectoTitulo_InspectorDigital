@@ -3,14 +3,10 @@ const jwt = require('jsonwebtoken');
 const { getConnection, sql } = require('../config/database');
 const config = require('../config/config');
 
-/**
- * Registrar nuevo usuario
- */
 const register = async (req, res) => {
     try {
         const { username, email, password, fullName, perfilId } = req.body;
 
-        // Validaciones básicas
         if (!username || !email || !password) {
             return res.status(400).json({ error: 'Todos los campos son obligatorios' });
         }
@@ -21,7 +17,6 @@ const register = async (req, res) => {
 
         const pool = await getConnection();
 
-        // Verificar si el usuario ya existe
         const existingUser = await pool.request()
             .input('username', sql.VarChar, username)
             .input('email', sql.VarChar, email)
@@ -31,10 +26,8 @@ const register = async (req, res) => {
             return res.status(400).json({ error: 'El usuario o email ya está registrado' });
         }
 
-        // Encriptar contraseña
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Insertar nuevo usuario
         const result = await pool.request()
             .input('username', sql.VarChar, username)
             .input('email', sql.VarChar, email)
@@ -64,9 +57,6 @@ const register = async (req, res) => {
     }
 };
 
-/**
- * Iniciar sesión
- */
 const login = async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -77,7 +67,6 @@ const login = async (req, res) => {
 
         const pool = await getConnection();
 
-        // Buscar usuario por username o email
         const result = await pool.request()
             .input('username', sql.VarChar, username)
             .query(`
@@ -92,19 +81,16 @@ const login = async (req, res) => {
 
         const user = result.recordset[0];
 
-        // Verificar contraseña
         const validPassword = await bcrypt.compare(password, user.PasswordHash);
 
         if (!validPassword) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        // Actualizar último acceso
         await pool.request()
             .input('userId', sql.Int, user.IDUsuario)
             .query('UPDATE Usuario SET UltimoAcceso = GETDATE() WHERE IDUsuario = @userId');
 
-        // Generar JWT
         const token = jwt.sign(
             {
                 id: user.IDUsuario,
@@ -116,7 +102,6 @@ const login = async (req, res) => {
             { expiresIn: config.JWT_EXPIRES_IN }
         );
 
-        // Enviar token en cookie
         res.cookie('token', token, {
             httpOnly: true,
             secure: config.NODE_ENV === 'production',
@@ -140,17 +125,11 @@ const login = async (req, res) => {
     }
 };
 
-/**
- * Cerrar sesión
- */
 const logout = (req, res) => {
     res.clearCookie('token');
     res.json({ message: 'Sesión cerrada exitosamente' });
 };
 
-/**
- * Obtener usuario actual
- */
 const getCurrentUser = async (req, res) => {
     try {
         const pool = await getConnection();

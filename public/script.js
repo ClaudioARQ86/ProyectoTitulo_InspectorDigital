@@ -1,7 +1,5 @@
-// API Base URL
 const API_URL = 'http://localhost:3000/api';
 
-// Variables globales para el flujo
 let datosInspeccion = {
     siniestro: '',
     cobertura: '',
@@ -10,12 +8,10 @@ let datosInspeccion = {
     firma: ''
 };
 
-// ===== VERIFICACIÓN DE SESIÓN =====
 async function verificarSesion() {
     const token = localStorage.getItem('token');
     
     if (!token) {
-        // Redirigir a login si no hay token
         if (!window.location.pathname.includes('login.html')) {
             window.location.replace('login.html');
         }
@@ -34,7 +30,6 @@ async function verificarSesion() {
             mostrarUsuario(data.user);
             return data.user;
         } else {
-            // Token inválido, limpiar y redirigir
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             if (!window.location.pathname.includes('login.html')) {
@@ -58,7 +53,6 @@ function mostrarUsuario(user) {
     }
 }
 
-// ===== LOGOUT =====
 async function cerrarSesion() {
     try {
         await fetch(`${API_URL}/auth/logout`, {
@@ -68,22 +62,17 @@ async function cerrarSesion() {
         console.error('Error al cerrar sesión:', error);
     }
 
-    // Limpiar datos locales
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     
-    // Redirigir a login
     window.location.replace('login.html');
 }
 
-// ===== MENU LATERAL RESPONSIVO =====
 document.addEventListener('DOMContentLoaded', () => {
-    // Verificar sesión al cargar la página
     if (!window.location.pathname.includes('login.html')) {
         verificarSesion();
     }
 
-    // Botón de logout
     const btnLogout = document.getElementById('btnLogout');
     if (btnLogout) {
         btnLogout.addEventListener('click', cerrarSesion);
@@ -95,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeMenu = document.querySelector('.close-menu');
     const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
 
-    // Abrir menú
     if (menuToggle) {
         menuToggle.addEventListener('click', () => {
             sidebar.classList.add('active');
@@ -104,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Cerrar menú (botón X)
     if (closeMenu) {
         closeMenu.addEventListener('click', () => {
             sidebar.classList.remove('active');
@@ -113,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Cerrar menú (overlay)
     if (sidebarOverlay) {
         sidebarOverlay.addEventListener('click', () => {
             sidebar.classList.remove('active');
@@ -122,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Cerrar menú al hacer clic en un enlace
     sidebarLinks.forEach(link => {
         link.addEventListener('click', () => {
             sidebar.classList.remove('active');
@@ -132,20 +117,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ===== NAVEGACIÓN DE PASOS =====
 function irAPaso(numeroPaso) {
-    // Ocultar todos los pasos y secciones
     document.querySelectorAll('.paso-section').forEach(paso => {
         paso.classList.remove('active');
     });
     
-    // Mostrar paso o sección solicitada
     let elemento;
     if (typeof numeroPaso === 'string') {
-        // Es una sección (about, config, help)
         elemento = document.getElementById(numeroPaso);
     } else {
-        // Es un número de paso
         elemento = document.getElementById(`paso${numeroPaso}`);
     }
     
@@ -155,7 +135,6 @@ function irAPaso(numeroPaso) {
     }
 }
 
-// ===== PASO 1: ACCESO =====
 document.getElementById('accesoForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -176,7 +155,6 @@ document.getElementById('accesoForm').addEventListener('submit', async (e) => {
     }, 1000);
 });
 
-// ===== PASO 2: CAPTURA =====
 document.getElementById('capturaForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -199,7 +177,6 @@ document.getElementById('capturaForm').addEventListener('submit', async (e) => {
     }, 1000);
 });
 
-// ===== PASO 3: FINALIZAR =====
 document.getElementById('finalizarForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -210,7 +187,6 @@ document.getElementById('finalizarForm').addEventListener('submit', async (e) =>
         return;
     }
     
-    // Enviar datos a la API
     try {
         const datos = {
             IDCaso: Math.floor(Math.random() * 10000),
@@ -229,7 +205,6 @@ document.getElementById('finalizarForm').addEventListener('submit', async (e) =>
         if (response.ok) {
             mostrarMensaje('mensajePaso3', '✓ Inspección sincronizada correctamente', 'success');
             setTimeout(() => {
-                // Resetear formularios y volver al paso 1
                 document.getElementById('accesoForm').reset();
                 document.getElementById('capturaForm').reset();
                 datosInspeccion = { siniestro: '', cobertura: '', descripcion: '', fotos: [], firma: '' };
@@ -244,7 +219,6 @@ document.getElementById('finalizarForm').addEventListener('submit', async (e) =>
     }
 });
 
-// ===== FUNCIONES AUXILIARES =====
 function mostrarMensaje(elementId, mensaje, tipo) {
     const div = document.getElementById(elementId);
     div.textContent = mensaje;
@@ -260,7 +234,6 @@ function actualizarResumen() {
     document.getElementById('resumen_descripcion').textContent = datosInspeccion.descripcion || '-';
 }
 
-// ===== GESTIÓN DE FOTOS =====
 document.getElementById('fotosInput').addEventListener('change', (e) => {
     const archivos = e.target.files;
     const preview = document.getElementById('fotosPreview');
@@ -273,7 +246,6 @@ document.getElementById('fotosInput').addEventListener('change', (e) => {
             img.src = event.target.result;
             preview.appendChild(img);
             
-            // Agregar también a la galería de finalizar
             const galeria = document.getElementById('galeria_fotos');
             const imgGaleria = document.createElement('img');
             imgGaleria.src = event.target.result;
@@ -283,9 +255,6 @@ document.getElementById('fotosInput').addEventListener('change', (e) => {
     }
 });
 
-// ===== INTERACTIVIDAD DE SECCIONES ADICIONALES =====
-
-// FAQ - Expandir/Contraer
 (() => {
     const faqItems = document.querySelectorAll('.faq-item');
     
@@ -294,21 +263,18 @@ document.getElementById('fotosInput').addEventListener('change', (e) => {
         
         if (question) {
             question.addEventListener('click', () => {
-                // Cerrar otros items
                 faqItems.forEach(otherItem => {
                     if (otherItem !== item) {
                         otherItem.classList.remove('active');
                     }
                 });
                 
-                // Toggle del item actual
                 item.classList.toggle('active');
             });
         }
     });
 })();
 
-// Sincronización
 document.addEventListener('DOMContentLoaded', () => {
     const syncBtns = document.querySelectorAll('.config-group .btn-primary');
     
@@ -316,18 +282,15 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             
-            // Cambiar estado del botón
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sincronizando...';
             btn.disabled = true;
             
-            // Simular sincronización
             setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 mostrarMensaje('sync-mensaje', '✓ Sincronización completada exitosamente', 'success');
                 
-                // Crear elemento de mensaje si no existe
                 if (!document.getElementById('sync-mensaje')) {
                     const msg = document.createElement('div');
                     msg.id = 'sync-mensaje';
@@ -340,7 +303,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Formulario de reporte de bugs
 document.addEventListener('DOMContentLoaded', () => {
     const bugForm = document.getElementById('bugForm');
     
@@ -348,7 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {
         bugForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            // Crear mensaje
             let bugMsg = document.getElementById('bug-mensaje');
             if (!bugMsg) {
                 bugMsg = document.createElement('div');
@@ -368,7 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ===== INICIALIZAR =====
 window.addEventListener('load', () => {
     irAPaso(1);
 });

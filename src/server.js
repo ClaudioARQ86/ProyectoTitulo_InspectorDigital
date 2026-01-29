@@ -17,7 +17,6 @@ app.listen(PORT, () => {
     `);
 });
 
-// Manejo de cierre graceful
 process.on('SIGTERM', () => {
     console.log('🛑 SIGTERM recibido. Cerrando servidor...');
     process.exit(0);

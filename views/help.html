@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <!-- MENÚ LATERAL MÓVIL -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -156,26 +155,24 @@
 
     <script src="/script.js"></script>
     <script>
-        // FAQ expandible
+
         const faqItems = document.querySelectorAll('.faq-item');
         
         faqItems.forEach(item => {
             const question = item.querySelector('.faq-question');
             
             question.addEventListener('click', () => {
-                // Cerrar otros items
                 faqItems.forEach(otherItem => {
                     if (otherItem !== item) {
                         otherItem.classList.remove('active');
                     }
                 });
                 
-                // Toggle del item actual
+
                 item.classList.toggle('active');
             });
         });
 
-        // Formulario de reporte de bugs
         document.getElementById('bugForm').addEventListener('submit', (e) => {
             e.preventDefault();
             

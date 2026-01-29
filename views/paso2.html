@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <!-- MENÚ LATERAL MÓVIL -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -44,7 +43,6 @@
         </header>
 
         <div class="app-main">
-            <!-- SECCIÓN MÓDULO DE CAPTURA - PASO 2 -->
             <section class="tab-content active paso-section">
                 <div class="paso-header">
                     <i class="fas fa-edit"></i>
@@ -98,13 +96,10 @@
 
     <script src="/script.js"></script>
     <script>
-        // Verificar sesión al cargar
         verificarSesion();
 
-        // Cargar datos del caso al iniciar
         window.addEventListener('DOMContentLoaded', async () => {
             try {
-                // Obtener datos del caso desde sessionStorage
                 const casoActual = JSON.parse(sessionStorage.getItem('casoActual'));
                 
                 if (!casoActual) {
@@ -113,7 +108,6 @@
                     return;
                 }
 
-                // Mostrar solo la cobertura asignada al caso
                 const selectCobertura = document.getElementById('tipo_cobertura');
                 selectCobertura.innerHTML = '';
                 
@@ -129,7 +123,6 @@
             }
         });
 
-        // Manejo de fotos
         document.getElementById('fotosInput').addEventListener('change', (e) => {
             const archivos = e.target.files;
             const preview = document.getElementById('fotosPreview');
@@ -145,7 +138,6 @@
             }
         });
 
-        // Evento de envío del formulario Paso 2
         document.getElementById('capturaForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -160,7 +152,6 @@
             }
 
             try {
-                // Obtener datos del caso
                 const casoActual = JSON.parse(sessionStorage.getItem('casoActual'));
                 
                 if (!casoActual || !casoActual.idRecinto) {
@@ -168,27 +159,23 @@
                     return;
                 }
 
-                // Mostrar indicador de carga
                 const btnSubmit = e.target.querySelector('button[type="submit"]');
                 const textoOriginal = btnSubmit.innerHTML;
                 btnSubmit.disabled = true;
                 btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
-                // Crear FormData para enviar archivos
                 const formData = new FormData();
                 formData.append('idRecinto', casoActual.idRecinto);
                 formData.append('descripcion', descripcion_danos);
                 formData.append('superficie', superficie || '');
                 formData.append('volumen', volumen || '');
 
-                // Agregar fotos
                 if (fotosInput.files.length > 0) {
                     for (let i = 0; i < fotosInput.files.length; i++) {
                         formData.append('fotos', fotosInput.files[i]);
                     }
                 }
 
-                // Enviar a la API
                 const response = await fetch('/api/danos', {
                     method: 'POST',
                     headers: {
@@ -206,7 +193,6 @@
                     return;
                 }
 
-                // Guardar descripción en sessionStorage para paso3
                 let datosInspeccion = {
                     descripcion: descripcion_danos,
                     superficie: superficie,

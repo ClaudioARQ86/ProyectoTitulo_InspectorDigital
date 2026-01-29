@@ -1,5 +1,3 @@
-
-
 CREATE TABLE Asegurado
 (
     IDAsegurado INT PRIMARY KEY,
@@ -103,7 +101,7 @@ CREATE TABLE CasoAsignado
     FOREIGN KEY (IDPerfil) REFERENCES Perfil(IDPerfil)
 );
 
--- Tabla de Usuarios para autenticación
+--Se crea Tabla de Usuarios para autenticación
 CREATE TABLE Usuario
 (
     IDUsuario INT PRIMARY KEY IDENTITY(1,1),
@@ -123,7 +121,7 @@ CREATE INDEX IX_Usuario_NombreUsuario ON Usuario(NombreUsuario);
 CREATE INDEX IX_Usuario_Email ON Usuario(Email);
 
 -- Se agregar columnas para almacenar datos de paso2
-ALTER TABLE Caso
+ALTER TABLE Danos
 ADD 
     DescripcionDanos NVARCHAR(MAX) NULL,
     Superficie DECIMAL(10,2) NULL,

@@ -12,7 +12,7 @@ const dbConfig = {
         idleTimeoutMillis: 30000
     },
     options: {
-        encrypt: true, // Obligatorio para Azure SQL
+        encrypt: true,
         trustServerCertificate: false,
         connectionTimeout: 30000,
         requestTimeout: 30000
@@ -24,26 +24,21 @@ let connecting = false;
 
 const getConnection = async () => {
     try {
-        // Si ya hay un pool conectado, verificar si está disponible
         if (pool && pool.connected) {
             return pool;
         }
 
-        // Si ya se está conectando, esperar
         if (connecting) {
             await new Promise(resolve => setTimeout(resolve, 100));
             return getConnection();
         }
 
-        // Iniciar nueva conexión
         connecting = true;
         
-        // Cerrar pool anterior si existe pero no está conectado
         if (pool) {
             try {
                 await pool.close();
             } catch (err) {
-                // Ignorar errores al cerrar
             }
             pool = null;
         }
@@ -68,7 +63,6 @@ const getConnection = async () => {
     }
 };
 
-// Cerrar conexión al terminar (solo para entornos no serverless)
 if (process.env.NODE_ENV !== 'production') {
     process.on('exit', async () => {
         if (pool) {

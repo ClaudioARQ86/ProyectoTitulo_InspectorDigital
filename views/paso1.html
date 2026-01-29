@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <!-- MENÚ LATERAL MÓVIL -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -44,7 +43,6 @@
         </header>
 
         <div class="app-main">
-            <!-- SECCIÓN ACCESO - PASO 1 -->
             <section class="tab-content active paso-section">
                 <div class="paso-header">
                     <i class="fas fa-lock"></i>
@@ -73,10 +71,8 @@
 
     <script src="/script.js"></script>
     <script>
-        // Verificar sesión al cargar
         verificarSesion();
 
-        // Evento de envío del formulario Paso 1
         document.getElementById('accesoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -89,13 +85,11 @@
             }
 
             try {
-                // Mostrar indicador de carga
                 const btnSubmit = e.target.querySelector('button[type="submit"]');
                 const textoOriginal = btnSubmit.innerHTML;
                 btnSubmit.disabled = true;
                 btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando...';
 
-                // Llamar a la API para validar el caso
                 const response = await fetch('/api/casos/validar', {
                     method: 'POST',
                     headers: {
@@ -117,7 +111,6 @@
                     return;
                 }
 
-                // Guardar datos del caso en sessionStorage
                 sessionStorage.setItem('casoActual', JSON.stringify(data.data));
                 
                 mostrarMensaje('mensaje', '✓ Caso encontrado: ' + data.data.nombreAsegurado, 'success');

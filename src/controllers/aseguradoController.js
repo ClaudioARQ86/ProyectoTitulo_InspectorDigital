@@ -1,8 +1,5 @@
 const { getConnection, sql } = require('../config/database');
 
-/**
- * Obtener todos los asegurados
- */
 const getAllAsegurados = async (req, res) => {
     try {
         const pool = await getConnection();
@@ -15,9 +12,6 @@ const getAllAsegurados = async (req, res) => {
     }
 };
 
-/**
- * Obtener un asegurado por ID
- */
 const getAseguradoById = async (req, res) => {
     try {
         const pool = await getConnection();
@@ -36,9 +30,6 @@ const getAseguradoById = async (req, res) => {
     }
 };
 
-/**
- * Crear nuevo asegurado
- */
 const createAsegurado = async (req, res) => {
     const { IDAsegurado, Nombre, ApellidoMaterno, ApellidoPaterno, Rut, Dv } = req.body;
     

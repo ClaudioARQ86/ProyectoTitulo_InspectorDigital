@@ -136,7 +136,6 @@
     </style>
 </head>
 <body>
-    <!-- MENÚ LATERAL MÓVIL -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -218,10 +217,8 @@
 
     <script src="/script.js"></script>
     <script>
-        // Verificar sesión al cargar
         verificarSesion();
 
-        // Cargar casos inspeccionados al cargar la página
         document.addEventListener('DOMContentLoaded', cargarCasosInspeccionados);
 
         async function cargarCasosInspeccionados() {
@@ -232,19 +229,16 @@
             const casosTableBody = document.getElementById('casosTableBody');
 
             try {
-                // Mostrar spinner
                 loadingSpinner.style.display = 'flex';
                 tableContainer.style.display = 'none';
                 errorMessage.style.display = 'none';
                 infoMessage.style.display = 'none';
 
-                // Obtener token
                 const token = localStorage.getItem('token');
                 if (!token) {
                     throw new Error('No se encontró token de autenticación');
                 }
 
-                // Realizar petición
                 const response = await fetch('/api/casos/inspeccionados', {
                     method: 'GET',
                     headers: {
@@ -259,7 +253,6 @@
                     throw new Error(data.message || 'Error al cargar casos inspeccionados');
                 }
 
-                // Ocultar spinner
                 loadingSpinner.style.display = 'none';
 
                 if (!data.data || data.data.length === 0) {
@@ -269,10 +262,8 @@
                     return;
                 }
 
-                // Actualizar estadísticas
                 document.getElementById('totalCasos').textContent = data.data.length;
 
-                // Llenar tabla
                 casosTableBody.innerHTML = '';
                 data.data.forEach(caso => {
                     const row = document.createElement('tr');
@@ -291,7 +282,6 @@
                     casosTableBody.appendChild(row);
                 });
 
-                // Mostrar tabla
                 tableContainer.style.display = 'block';
 
             } catch (error) {

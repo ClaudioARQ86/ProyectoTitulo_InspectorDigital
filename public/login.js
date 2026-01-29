@@ -1,6 +1,4 @@
-// public/login.js
 document.addEventListener('DOMContentLoaded', () => {
-    // Elementos del DOM
     const tabButtons = document.querySelectorAll('.auth-tab-button');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -10,22 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerPassword = document.getElementById('registerPassword');
     const passwordStrength = document.getElementById('passwordStrength');
 
-    // Verificar si ya hay sesión activa
     checkSession();
 
-    // Cargar perfiles para el selector
     loadPerfiles();
 
-    // Manejo de pestañas
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const tabName = button.dataset.tab;
             
-            // Cambiar clase activa de los botones
             tabButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
 
-            // Mostrar/ocultar formularios
             if (tabName === 'login') {
                 loginForm.classList.add('active');
                 registerForm.classList.remove('active');
@@ -34,13 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 loginForm.classList.remove('active');
             }
 
-            // Limpiar alertas
+
             hideAlert(loginAlert);
             hideAlert(registerAlert);
         });
     });
 
-    // Toggle para mostrar/ocultar contraseñas
     togglePasswordButtons.forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.target;
@@ -59,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Medidor de fortaleza de contraseña
     if (registerPassword) {
         registerPassword.addEventListener('input', (e) => {
             const password = e.target.value;
@@ -67,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Manejo del formulario de login
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -96,13 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Guardar token SIEMPRE (necesario para mantener sesión)
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
                 showAlert(loginAlert, 'Login exitoso. Redirigiendo...', 'success');
                 
-                // Redirigir a la página principal (replace evita volver con botón atrás)
                 setTimeout(() => {
                     window.location.replace('Index.html');
                 }, 1500);
@@ -119,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Manejo del formulario de registro
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -130,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.getElementById('registerPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
 
-        // Validaciones
         if (!fullName || !username || !email || !perfilId || !password || !confirmPassword) {
             showAlert(registerAlert, 'Por favor complete todos los campos', 'error');
             return;
@@ -175,11 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 showAlert(registerAlert, 'Registro exitoso. Cambiando a login...', 'success');
                 
-                // Limpiar formulario
                 registerForm.reset();
                 passwordStrength.className = 'password-strength';
                 
-                // Cambiar a pestaña de login después de 2 segundos
                 setTimeout(() => {
                     document.querySelector('[data-tab="login"]').click();
                     showAlert(loginAlert, 'Ya puede iniciar sesión con sus credenciales', 'info');
@@ -198,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Funciones auxiliares
     function showAlert(alertElement, message, type) {
         alertElement.textContent = message;
         alertElement.className = `alert ${type}`;
@@ -217,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let strength = 0;
 
-        // Criterios de fortaleza
         if (password.length >= 6) strength++;
         if (password.length >= 10) strength++;
         if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
@@ -250,11 +232,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
-                    // Ya hay una sesión activa, redirigir
                     window.location.replace('Index.html');
                     return true;
                 } else {
-                    // Token inválido, limpiarlo
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
                 }

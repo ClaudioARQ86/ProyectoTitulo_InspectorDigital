@@ -1,8 +1,5 @@
 const { getConnection, sql } = require('../config/database');
 
-/**
- * Obtener todos los perfiles disponibles
- */
 const getAllPerfiles = async (req, res) => {
     try {
         const pool = await getConnection();

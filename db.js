@@ -4,7 +4,7 @@ require('dotenv').config();
 const dbConfig = {
     user: process.env.DB_USER || 'creyes_alumno',
     password: process.env.DB_PASSWORD || 'NuevaClave123',
-    server: process.env.DB_SERVER || 'inspectordigital1.database.windows.net', // Azure SQL Server
+    server: process.env.DB_SERVER || 'inspectordigital1.database.windows.net',
     database: process.env.DB_NAME || 'free-sql-db-2451406',
     pool: {
         max: 10,
@@ -12,7 +12,7 @@ const dbConfig = {
         idleTimeoutMillis: 30000
     },
     options: {
-        encrypt: true, // Obligatorio para Azure SQL
+        encrypt: true,
         trustServerCertificate: false,
         connectionTimeout: 30000,
         requestTimeout: 30000
@@ -35,7 +35,6 @@ const getConnection = async () => {
     }
 };
 
-// Cerrar conexión al terminar
 process.on('exit', async () => {
     if (pool) {
         await pool.close();

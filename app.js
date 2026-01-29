@@ -1,4 +1,3 @@
-// app.js
 const express = require('express');
 const path = require('path');
 const bcrypt = require('bcryptjs');
@@ -7,14 +6,12 @@ const cookieParser = require('cookie-parser');
 const { getConnection, sql } = require('./db');
 const app = express();
 
-// Clave secreta para JWT (en producción usar variable de entorno)
 const JWT_SECRET = process.env.JWT_SECRET || 'inspector-digital-secret-key-2026';
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname)));
 
-// Rutas específicas para servir archivos HTML
 app.get('/login.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
 });
@@ -27,7 +24,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
 });
 
-// Rutas específicas para servir archivos estáticos
 app.get('/style.css', (req, res) => {
     res.sendFile(path.join(__dirname, 'style.css'));
 });
@@ -40,13 +36,11 @@ app.get('/public/login.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.js'));
 });
 
-// Middleware de manejo de errores
 const handleError = (res, error, statusCode = 500) => {
     console.error(error);
     res.status(statusCode).json({ error: error.message });
 };
 
-// Middleware de autenticación
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.token || req.headers['authorization']?.split(' ')[1];
     
@@ -63,13 +57,10 @@ const authenticateToken = (req, res, next) => {
     }
 };
 
-// ===== AUTENTICACIÓN =====
-// POST: Registro de usuario
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { username, email, password, fullName, perfilId } = req.body;
 
-        // Validaciones básicas
         if (!username || !email || !password) {
             return res.status(400).json({ error: 'Todos los campos son obligatorios' });
         }
@@ -80,7 +71,6 @@ app.post('/api/auth/register', async (req, res) => {
 
         const pool = await getConnection();
 
-        // Verificar si el usuario ya existe
         const existingUser = await pool.request()
             .input('username', sql.VarChar, username)
             .input('email', sql.VarChar, email)
@@ -90,10 +80,8 @@ app.post('/api/auth/register', async (req, res) => {
             return res.status(400).json({ error: 'El usuario o email ya está registrado' });
         }
 
-        // Encriptar contraseña
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Insertar nuevo usuario
         const result = await pool.request()
             .input('username', sql.VarChar, username)
             .input('email', sql.VarChar, email)
@@ -122,7 +110,6 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
-// POST: Login de usuario
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -133,7 +120,6 @@ app.post('/api/auth/login', async (req, res) => {
 
         const pool = await getConnection();
 
-        // Buscar usuario por username o email
         const result = await pool.request()
             .input('username', sql.VarChar, username)
             .query(`
@@ -148,19 +134,16 @@ app.post('/api/auth/login', async (req, res) => {
 
         const user = result.recordset[0];
 
-        // Verificar contraseña
         const validPassword = await bcrypt.compare(password, user.Password);
 
         if (!validPassword) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        // Actualizar último acceso
         await pool.request()
             .input('userId', sql.Int, user.IDUsuario)
             .query('UPDATE Usuario SET UltimoAcceso = GETDATE() WHERE IDUsuario = @userId');
 
-        // Generar JWT
         const token = jwt.sign(
             {
                 id: user.IDUsuario,
@@ -172,11 +155,10 @@ app.post('/api/auth/login', async (req, res) => {
             { expiresIn: '24h' }
         );
 
-        // Enviar token en cookie
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000 // 24 horas
+            maxAge: 24 * 60 * 60 * 1000
         });
 
         res.json({
@@ -195,13 +177,11 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-// POST: Logout
 app.post('/api/auth/logout', (req, res) => {
     res.clearCookie('token');
     res.json({ message: 'Sesión cerrada exitosamente' });
 });
 
-// GET: Verificar sesión actual
 app.get('/api/auth/me', authenticateToken, async (req, res) => {
     try {
         const pool = await getConnection();
@@ -223,12 +203,6 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
     }
 });
 
-// ===== ASEGURADOS =====
-// NOTA: Para proteger estas rutas y requerir autenticación, 
-// agrega el middleware 'authenticateToken' como segundo parámetro:
-// app.get('/api/asegurados', authenticateToken, async (req, res) => { ... });
-
-// GET: Obtener todos los asegurados
 app.get('/api/asegurados', async (req, res) => {
     try {
         const pool = await getConnection();
@@ -240,7 +214,6 @@ app.get('/api/asegurados', async (req, res) => {
     }
 });
 
-// GET: Obtener un asegurado por ID
 app.get('/api/asegurados/:id', async (req, res) => {
     try {
         const pool = await getConnection();
@@ -256,7 +229,6 @@ app.get('/api/asegurados/:id', async (req, res) => {
     }
 });
 
-// POST: Crear nuevo asegurado
 app.post('/api/asegurados', async (req, res) => {
     const { IDAsegurado, Nombre, ApellidoMaterno, ApellidoPaterno, Rut, Dv } = req.body;
     try {
@@ -276,8 +248,6 @@ app.post('/api/asegurados', async (req, res) => {
     }
 });
 
-// ===== BIENES =====
-// GET: Obtener bienes de un asegurado
 app.get('/api/asegurados/:id/bienes', async (req, res) => {
     try {
         const pool = await getConnection();
@@ -290,7 +260,6 @@ app.get('/api/asegurados/:id/bienes', async (req, res) => {
     }
 });
 
-// POST: Crear nuevo bien
 app.post('/api/bienes', async (req, res) => {
     const { IDBienes, IDAsegurado, Descripcion } = req.body;
     try {
@@ -307,8 +276,6 @@ app.post('/api/bienes', async (req, res) => {
     }
 });
 
-// ===== RECINTOS =====
-// GET: Obtener recintos de un bien
 app.get('/api/bienes/:id/recintos', async (req, res) => {
     try {
         const pool = await getConnection();
@@ -321,7 +288,6 @@ app.get('/api/bienes/:id/recintos', async (req, res) => {
     }
 });
 
-// POST: Crear nuevo recinto
 app.post('/api/recintos', async (req, res) => {
     const { IDRecinto, IDBienes, Direccion } = req.body;
     try {
@@ -338,8 +304,6 @@ app.post('/api/recintos', async (req, res) => {
     }
 });
 
-// ===== DAÑOS =====
-// GET: Obtener daños de un recinto
 app.get('/api/recintos/:id/danos', async (req, res) => {
     try {
         const pool = await getConnection();
@@ -352,7 +316,6 @@ app.get('/api/recintos/:id/danos', async (req, res) => {
     }
 });
 
-// POST: Registrar daños en un recinto
 app.post('/api/danos', async (req, res) => {
     const { IDDanos, IDRecinto, Descripcion } = req.body;
     try {
@@ -369,8 +332,6 @@ app.post('/api/danos', async (req, res) => {
     }
 });
 
-// ===== CASOS =====
-// GET: Obtener todos los casos
 app.get('/api/casos', async (req, res) => {
     try {
         const pool = await getConnection();
@@ -386,7 +347,6 @@ app.get('/api/casos', async (req, res) => {
     }
 });
 
-// POST: Crear nuevo caso
 app.post('/api/casos', async (req, res) => {
     const { IDCaso, IDCompania, IDAsegurado } = req.body;
     try {
@@ -403,7 +363,6 @@ app.post('/api/casos', async (req, res) => {
     }
 });
 
-// Ruta raíz - Servir Index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Index.html'));
 });

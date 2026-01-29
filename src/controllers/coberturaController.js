@@ -1,8 +1,5 @@
 const { getConnection } = require('../config/database');
 
-/**
- * Obtener todas las coberturas disponibles
- */
 const getAllCoberturas = async (req, res) => {
     try {
         const pool = await getConnection();

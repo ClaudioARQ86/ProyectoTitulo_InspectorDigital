@@ -1,6 +1,5 @@
 const { getConnection } = require('../config/database');
 
-// Verifica que el IDCaso existe y que el RUT del asegurado coincide
 const validarAccesoCaso = async (req, res) => {
     try {
         const { idCaso, rutAsegurado } = req.body;
@@ -14,8 +13,6 @@ const validarAccesoCaso = async (req, res) => {
 
         const pool = await getConnection();
         
-        // Consulta para validar el caso y el asegurado
-        // Concatenamos RUT + '-' + DV para comparar con el formato completo
         const query = `
             SELECT 
                 c.IDCaso,
@@ -76,7 +73,6 @@ const validarAccesoCaso = async (req, res) => {
     }
 };
 
-//Obtener información completa de un caso
 const obtenerCaso = async (req, res) => {
     try {
         const { idCaso } = req.params;
@@ -118,10 +114,8 @@ const obtenerCaso = async (req, res) => {
     }
 };
 
-// Obtener casos inspeccionados por el usuario logueado
 const obtenerCasosInspeccionados = async (req, res) => {
     try {
-        // El usuario viene del middleware de autenticación
         const idUsuario = req.user.id;
 
         const pool = await getConnection();
