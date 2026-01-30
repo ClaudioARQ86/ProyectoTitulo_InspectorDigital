@@ -65,9 +65,14 @@ app.get('/:page.html', (req, res, next) => {
     const pageName = req.params.page;
     const allowedPages = ['paso1', 'paso2', 'paso3', 'about', 'config', 'help', 'casos-inspeccionados'];
     
+    // Log path for debugging in Vercel
+    const viewPath = path.join(__dirname, '../views', `${pageName}.html`);
+    console.log(`[Vercel] Attempting to serve view: ${viewPath}`);
+
     if (allowedPages.includes(pageName)) {
-        res.sendFile(path.join(__dirname, '../views', `${pageName}.html`), (err) => {
+        res.sendFile(viewPath, (err) => {
             if (err) {
+                console.error(`[Vercel] Error serving ${pageName}:`, err);
                 next();
             }
         });
