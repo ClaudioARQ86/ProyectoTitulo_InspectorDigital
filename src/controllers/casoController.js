@@ -2,9 +2,11 @@ const { getConnection } = require('../config/database');
 
 const validarAccesoCaso = async (req, res) => {
     try {
+        console.log('[VALIDAR] /api/casos/validar called with body:', req.body);
         const { idCaso, rutAsegurado } = req.body;
 
         if (!idCaso || !rutAsegurado) {
+            console.log('[VALIDAR] Missing idCaso or rutAsegurado');
             return res.status(400).json({
                 success: false,
                 message: 'IDCaso y RUT Asegurado son requeridos'
@@ -12,6 +14,7 @@ const validarAccesoCaso = async (req, res) => {
         }
 
         const pool = await getConnection();
+        console.log('[VALIDAR] DB connection acquired, running query for', idCaso, rutAsegurado);
         
         const query = `
             SELECT 
@@ -38,6 +41,8 @@ const validarAccesoCaso = async (req, res) => {
             .input('idCaso', idCaso)
             .input('rutAsegurado', rutAsegurado)
             .query(query);
+
+        console.log('[VALIDAR] Query executed, rows:', result.recordset.length);
 
         if (result.recordset.length === 0) {
             return res.status(404).json({

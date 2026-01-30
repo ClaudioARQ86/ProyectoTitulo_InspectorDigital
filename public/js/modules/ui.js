@@ -13,8 +13,11 @@ export function initSidebar() {
     const closeMenu = document.querySelector('.close-menu');
     const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
 
+    console.log('[UI] initSidebar - menuToggle found:', !!menuToggle, 'sidebar found:', !!sidebar);
+
     if (menuToggle) {
         menuToggle.addEventListener('click', () => {
+            console.log('[UI] menuToggle clicked');
             sidebar.classList.add('active');
             sidebarOverlay.classList.add('active');
             document.body.style.overflow = 'hidden';

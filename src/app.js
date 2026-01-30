@@ -18,6 +18,21 @@ app.use((req, res, next) => {
     next();
 });
 
+// Middleware para log de peticiones (útil para depuración en Vercel)
+app.use((req, res, next) => {
+    const shortHeaders = {
+        host: req.headers.host,
+        origin: req.headers.origin,
+        referer: req.headers.referer,
+        'user-agent': req.headers['user-agent']
+    };
+    console.log(`[REQ] ${req.method} ${req.url} - ${JSON.stringify(shortHeaders)}`);
+    res.on('finish', () => {
+        console.log(`[RES] ${res.statusCode} ${req.method} ${req.url}`);
+    });
+    next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
