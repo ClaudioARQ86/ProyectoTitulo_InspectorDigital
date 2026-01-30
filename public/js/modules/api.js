@@ -1,8 +1,3 @@
-/**
- * Módulo de configuración de API
- * Contiene la URL base y constantes relacionadas con la API
- */
-
 // Detectar entorno automáticamente
 export const API_URL = window.location.hostname === 'localhost'
     ? 'http://localhost:3000/api'
