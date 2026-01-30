@@ -3,7 +3,10 @@
  * Contiene la URL base y constantes relacionadas con la API
  */
 
-export const API_URL = 'http://localhost:3000/api';
+// Detectar entorno automáticamente
+export const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000/api'
+    : '/api';
 
 /**
  * Obtiene el token de autenticación del localStorage
