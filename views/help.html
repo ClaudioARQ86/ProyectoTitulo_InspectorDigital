@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ayuda y Soporte - Inspector Digital</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -153,37 +153,28 @@
         </div>
     </div>
 
-    <script src="/script.js"></script>
-    <script>
-
-        const faqItems = document.querySelectorAll('.faq-item');
-        
-        faqItems.forEach(item => {
-            const question = item.querySelector('.faq-question');
-            
-            question.addEventListener('click', () => {
-                faqItems.forEach(otherItem => {
-                    if (otherItem !== item) {
-                        otherItem.classList.remove('active');
+    <script type="module" src="/js/main.js"></script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            const bugForm = document.getElementById('bugForm');
+            if (bugForm) {
+                bugForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const bugMsg = document.getElementById('bug-mensaje');
+                    if (bugMsg) {
+                        bugMsg.textContent = '✓ Reporte enviado. Gracias por tu feedback';
+                        bugMsg.classList.add('success');
                     }
+                    bugForm.reset();
+                    
+                    setTimeout(() => {
+                        if (bugMsg) {
+                            bugMsg.classList.remove('success');
+                        }
+                    }, 3000);
                 });
-                
-
-                item.classList.toggle('active');
-            });
-        });
-
-        document.getElementById('bugForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const bugMsg = document.getElementById('bug-mensaje');
-            bugMsg.textContent = '✓ Reporte enviado. Gracias por tu feedback';
-            bugMsg.classList.add('success');
-            document.getElementById('bugForm').reset();
-            
-            setTimeout(() => {
-                bugMsg.classList.remove('success');
-            }, 3000);
+            }
         });
     </script>
 </body>

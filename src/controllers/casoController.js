@@ -139,11 +139,11 @@ const obtenerCasosInspeccionados = async (req, res) => {
             INNER JOIN BIENES b ON a.IDAsegurado = b.IDAsegurado
             INNER JOIN Recinto r ON b.IDBienes = r.IDBienes
             LEFT JOIN Danos d ON r.IDRecinto = d.IDRecinto
-            LEFT JOIN Fotos f ON d.IDDanos = f.IDDanos
             INNER JOIN CasoAsignado ca ON c.IDCaso = ca.IDCaso
             INNER JOIN Perfil p ON ca.IDPerfil = p.IDPerfil
             INNER JOIN Usuario u ON p.IDPerfil = u.IDPerfil
             WHERE u.IDUsuario = @idUsuario
+            ORDER BY d.IDDanos DESC;
         `;
 
         const result = await pool.request()

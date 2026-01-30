@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Captura de Datos - Inspector Digital</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Google Maps API -->
+    <script>
+        // Callback global para Google Maps
+        window.initGoogleMapsCallback = function() {
+            console.log('✅ Google Maps cargado correctamente');
+        };
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW66hjuZpiBf-CA-lwaUpX0zWwDWsXam0&callback=initGoogleMapsCallback"></script>
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -75,10 +83,36 @@
                             <input type="number" id="volumen" placeholder="120" value="120" step="0.01">
                         </div>
                     </div>
-                    <button type="button" class="btn-secondary" onclick="document.getElementById('fotosInput').click()">
-                        <i class="fas fa-camera"></i> ADJUNTAR FOTOS/VIDEOS
-                    </button>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('fotosInput').click()" style="flex: 1;">
+                            <i class="fas fa-camera"></i> ADJUNTAR FOTOS/VIDEOS
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="abrirCapturaCamara()" style="flex: 1;">
+                            <i class="fas fa-video"></i> USAR CÁMARA
+                        </button>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <button type="button" id="btnObtenerUbicacion" class="btn-secondary" style="width: 100%;">
+                            <i class="fas fa-map-marker-alt"></i> OBTENER UBICACIÓN GPS
+                        </button>
+                    </div>
+                    <div id="ubicacionInfo" style="display: none; background: #e8f5e9; border-left: 4px solid #4caf50; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <i class="fas fa-check-circle" style="color: #4caf50;"></i>
+                            <strong>Ubicación capturada</strong>
+                        </div>
+                        <div style="font-size: 13px; color: #333;">
+                            <div><strong>Latitud:</strong> <span id="ubicacionLatitud">-</span></div>
+                            <div><strong>Longitud:</strong> <span id="ubicacionLongitud">-</span></div>
+                            <div><strong>Precisión:</strong> <span id="ubicacionPrecision">-</span></div>
+                            <button type="button" id="btnVerMapa" class="btn-secondary" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">
+                                <i class="fas fa-map"></i> Ver en Mapa
+                            </button>
+                        </div>
+                    </div>
                     <input type="file" id="fotosInput" multiple accept="image/*,video/*" style="display:none;">
+                    <input type="hidden" id="latitud" name="latitud">
+                    <input type="hidden" id="longitud" name="longitud">
                     <div id="fotosPreview" class="fotos-preview"></div>
                     <div style="display: flex; gap: 10px; margin-top: 20px;">
                         <button type="button" class="btn-secondary" onclick="window.location.href='paso1.html'" style="flex: 1; box-sizing: border-box; margin-top: 0;">
@@ -94,8 +128,63 @@
         </div>
     </div>
 
-    <script src="/script.js"></script>
-    <script>
+    <!-- Modal para ver mapa -->
+    <div id="mapaModal" class="camera-modal" style="display: none;">
+        <div class="camera-modal-content">
+            <div class="camera-modal-header">
+                <h3><i class="fas fa-map-marked-alt"></i> Ubicación en Mapa</h3>
+                <button type="button" id="btnCerrarMapa" class="camera-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="camera-modal-body">
+                <div id="mapa" style="width: 100%; height: 400px; border-radius: 8px;"></div>
+                <div style="margin-top: 12px; padding: 10px; background: #f5f5f5; border-radius: 6px; font-size: 13px;">
+                    <div><strong>Latitud:</strong> <span id="mapaLatitud">-</span></div>
+                    <div><strong>Longitud:</strong> <span id="mapaLongitud">-</span></div>
+                    <div style="margin-top: 8px; color: #666;">
+                        <i class="fas fa-info-circle"></i> Esta ubicación se guardará con la inspección
+                    </div>
+                </div>
+            </div>
+            <div class="camera-modal-buttons">
+                <button type="button" id="btnCerrarMapaBtn" class="btn-primary" style="width: 100%;">
+                    <i class="fas fa-check"></i> ACEPTAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para captura de cámara -->
+    <div id="camaraModal" class="camera-modal" style="display: none;">
+        <div class="camera-modal-content">
+            <div class="camera-modal-header">
+                <h3>Capturar Foto con Cámara</h3>
+                <button type="button" id="btnCerrarCamara" class="camera-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="camera-modal-body">
+                <video id="videoCaptura" autoplay playsinline muted style="width: 100%; max-height: 400px; background: #000; border-radius: 8px; margin-bottom: 15px;"></video>
+                <canvas id="canvasCaptura" style="display: none;"></canvas>
+                <div id="camaraErrorMsg" class="error-message" style="display: none; color: #d32f2f; margin-bottom: 15px;"></div>
+            </div>
+            <div class="camera-modal-buttons">
+                <button type="button" id="btnCancelarCamara" class="btn-secondary">
+                    <i class="fas fa-times"></i> CANCELAR
+                </button>
+                <button type="button" id="btnCapturarFoto" class="btn-primary">
+                    <i class="fas fa-camera"></i> CAPTURAR FOTO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/js/main.js"></script>
+    <script type="module">
+        import { verificarSesion } from './js/modules/auth.js';
+        import { mostrarMensaje } from './js/modules/ui.js';
+
         verificarSesion();
 
         window.addEventListener('DOMContentLoaded', async () => {
@@ -164,9 +253,18 @@
                 btnSubmit.disabled = true;
                 btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
+                // Agregar coordenadas GPS a la descripción si están disponibles
+                const latitud = document.getElementById('latitud').value;
+                const longitud = document.getElementById('longitud').value;
+                let descripcionFinal = descripcion_danos;
+                
+                if (latitud && longitud) {
+                    descripcionFinal = `${descripcion_danos} // GPS: ${latitud}, ${longitud}`;
+                }
+
                 const formData = new FormData();
                 formData.append('idRecinto', casoActual.idRecinto);
-                formData.append('descripcion', descripcion_danos);
+                formData.append('descripcion', descripcionFinal);
                 formData.append('superficie', superficie || '');
                 formData.append('volumen', volumen || '');
 
@@ -214,6 +312,52 @@
                 btnSubmit.innerHTML = 'SIGUIENTE <i class="fas fa-arrow-right"></i>';
             }
         });
+
+        // Event listeners para botones de cámara
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnCerrarCamara = document.getElementById('btnCerrarCamara');
+            const btnCancelarCamara = document.getElementById('btnCancelarCamara');
+            const btnCapturarFoto = document.getElementById('btnCapturarFoto');
+            const camaraModal = document.getElementById('camaraModal');
+
+            if (btnCerrarCamara) {
+                btnCerrarCamara.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Click en cerrar X');
+                    cerrarCapturaCamara();
+                });
+            }
+
+            if (btnCancelarCamara) {
+                btnCancelarCamara.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Click en cancelar');
+                    cerrarCapturaCamara();
+                });
+            }
+
+            if (btnCapturarFoto) {
+                btnCapturarFoto.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Click en capturar foto');
+                    capturarFoto();
+                });
+            }
+
+            // Cerrar al hacer click fuera del modal
+            if (camaraModal) {
+                camaraModal.addEventListener('click', (e) => {
+                    if (e.target === camaraModal) {
+                        console.log('Click fuera del modal');
+                        cerrarCapturaCamara();
+                    }
+                });
+            }
+        });
     </script>
+    <script type="module" src="/js/main.js"></script>
 </body>
 </html>
