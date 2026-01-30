@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const cookieParser = require('cookie-parser');
 const config = require('./config/config');
 const apiRoutes = require('./routes');
@@ -38,11 +39,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Configuración de rutas estáticas más robusta para Vercel
-// En Vercel, process.cwd() es la raíz del proyecto
-// NOTA: En Vercel Serverless, los archivos incluidos están en process.cwd() o __dirname dependiendo del bundle
-// Usaremos path.resolve para asegurar rutas absolutas
-const publicPath = path.resolve(__dirname, '../public'); // Fallback clásico
-const viewsPath = path.resolve(__dirname, '../views');   // Fallback clásico
+// En Vercel, los archivos pueden quedar en rutas distintas según el bundle
+const resolveExistingPath = (candidates) => {
+    for (const candidate of candidates) {
+        if (candidate && fs.existsSync(candidate)) {
+            return candidate;
+        }
+    }
+    return null;
+};
+
+const publicPath = resolveExistingPath([
+    path.resolve(process.cwd(), 'public'),
+    path.resolve(__dirname, '../public'),
+    path.resolve(__dirname, '../../public')
+]);
+
+const viewsPath = resolveExistingPath([
+    path.resolve(process.cwd(), 'views'),
+    path.resolve(__dirname, '../views'),
+    path.resolve(__dirname, '../../views')
+]);
 
 console.log(`[App] Initializing...`);
 console.log(`[App] CWD: ${process.cwd()}`);
@@ -51,25 +68,34 @@ console.log(`[App] Configured Static Path (Public): ${publicPath}`);
 console.log(`[App] Configured Views Path: ${viewsPath}`);
 
 // Servir archivos estáticos
-app.use('/css', express.static(path.join(publicPath, 'css'), {
-    setHeaders: (res) => res.set('Content-Type', 'text/css; charset=utf-8')
-}));
+if (publicPath) {
+    app.use('/css', express.static(path.join(publicPath, 'css'), {
+        setHeaders: (res) => res.set('Content-Type', 'text/css; charset=utf-8')
+    }));
 
-app.use('/js', express.static(path.join(publicPath, 'js'), {
-    setHeaders: (res, filepath) => {
-        if (filepath.endsWith('.js')) {
-            res.set('Content-Type', 'application/javascript; charset=utf-8');
+    app.use('/js', express.static(path.join(publicPath, 'js'), {
+        setHeaders: (res, filepath) => {
+            if (filepath.endsWith('.js')) {
+                res.set('Content-Type', 'application/javascript; charset=utf-8');
+            }
         }
-    }
-}));
+    }));
 
-app.use('/assets', express.static(path.join(publicPath, 'assets')));
-app.use(express.static(publicPath));
+    app.use('/assets', express.static(path.join(publicPath, 'assets')));
+    app.use(express.static(publicPath));
+} else {
+    console.error('[App] Public path not found. Static assets may 404.');
+}
 
 app.use('/api', apiRoutes);
 
 // Helper para servir HTMLs
 const serveHtml = (res, fileName) => {
+    if (!viewsPath) {
+        console.error(`[App] Views path not found. Cannot serve ${fileName}.`);
+        return res.status(404).send('File not found: ' + fileName);
+    }
+
     const filePath = path.join(viewsPath, fileName);
     res.sendFile(filePath, (err) => {
         if (err) {
