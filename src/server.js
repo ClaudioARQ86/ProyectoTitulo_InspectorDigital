@@ -1,10 +1,15 @@
 const app = require('./app');
 const config = require('./config/config');
 
-const PORT = config.PORT;
+// Para Vercel, exportar directamente la app sin listen
+if (process.env.VERCEL) {
+    module.exports = app;
+} else {
+    // Para desarrollo local
+    const PORT = config.PORT;
 
-app.listen(PORT, () => {
-    console.log(`
+    app.listen(PORT, () => {
+        console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║   🚀 Inspector Digital - Sistema de Siniestros            ║
 ║                                                            ║
@@ -14,15 +19,16 @@ app.listen(PORT, () => {
 ║                                                            ║
 ║   📝 Entorno:  ${config.NODE_ENV}                             ║
 ╚════════════════════════════════════════════════════════════╝
-    `);
-});
+        `);
+    });
 
-process.on('SIGTERM', () => {
-    console.log('🛑 SIGTERM recibido. Cerrando servidor...');
-    process.exit(0);
-});
+    process.on('SIGTERM', () => {
+        console.log('🛑 SIGTERM recibido. Cerrando servidor...');
+        process.exit(0);
+    });
 
-process.on('SIGINT', () => {
-    console.log('\n🛑 SIGINT recibido. Cerrando servidor...');
-    process.exit(0);
-});
+    process.on('SIGINT', () => {
+        console.log('\n🛑 SIGINT recibido. Cerrando servidor...');
+        process.exit(0);
+    });
+}

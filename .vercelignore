@@ -3,6 +3,7 @@
 # Documentación
 *.md
 !README.md
+GOOGLE_MAPS_CONFIG.md
 
 # Node modules (Vercel los instala automáticamente)
 node_modules/
@@ -39,4 +40,4 @@ Thumbs.db
 *.temp
 
 # Carpetas de instrucciones (no necesarias en producción)
-ANEXOS/
+Anexos/
