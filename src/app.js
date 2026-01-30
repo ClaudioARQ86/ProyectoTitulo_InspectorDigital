@@ -24,20 +24,23 @@ app.use(cookieParser());
 
 // Configuración de rutas estáticas más robusta para Vercel
 // En Vercel, process.cwd() es la raíz del proyecto
-const publicPath = path.join(process.cwd(), 'public');
-const viewsPath = path.join(process.cwd(), 'views');
+// NOTA: En Vercel Serverless, los archivos incluidos están en process.cwd() o __dirname dependiendo del bundle
+// Usaremos path.resolve para asegurar rutas absolutas
+const publicPath = path.resolve(__dirname, '../public'); // Fallback clásico
+const viewsPath = path.resolve(__dirname, '../views');   // Fallback clásico
 
-console.log(`[App] Public path configured to: ${publicPath}`);
-console.log(`[App] Views path configured to: ${viewsPath}`);
+console.log(`[App] Initializing...`);
+console.log(`[App] CWD: ${process.cwd()}`);
+console.log(`[App] __dirname: ${__dirname}`);
+console.log(`[App] Configured Static Path (Public): ${publicPath}`);
+console.log(`[App] Configured Views Path: ${viewsPath}`);
 
 // Servir archivos estáticos
 app.use('/css', express.static(path.join(publicPath, 'css'), {
-    maxAge: '1d',
     setHeaders: (res) => res.set('Content-Type', 'text/css; charset=utf-8')
 }));
 
 app.use('/js', express.static(path.join(publicPath, 'js'), {
-    maxAge: '1d',
     setHeaders: (res, filepath) => {
         if (filepath.endsWith('.js')) {
             res.set('Content-Type', 'application/javascript; charset=utf-8');
@@ -45,17 +48,30 @@ app.use('/js', express.static(path.join(publicPath, 'js'), {
     }
 }));
 
-app.use('/assets', express.static(path.join(publicPath, 'assets'), { maxAge: '7d' }));
+app.use('/assets', express.static(path.join(publicPath, 'assets')));
 app.use(express.static(publicPath));
 
 app.use('/api', apiRoutes);
 
 // Helper para servir HTMLs
 const serveHtml = (res, fileName) => {
-    res.sendFile(path.join(viewsPath, fileName), (err) => {
+    const filePath = path.join(viewsPath, fileName);
+    res.sendFile(filePath, (err) => {
         if (err) {
-            console.error(`[App] Error serving ${fileName}:`, err);
-            res.status(404).sendFile(path.join(viewsPath, 'login.html')); // Fallback seguro
+            console.error(`[App] Error serving ${fileName} from ${filePath}:`, err);
+            // Intentar con una ruta alternativa si falla (fallback para estructura Vercel plana)
+            const altPath = path.join(process.cwd(), 'views', fileName);
+            if (altPath !== filePath) {
+                console.log(`[App] Retrying with alternative path: ${altPath}`);
+                res.sendFile(altPath, (err2) => {
+                    if (err2) {
+                         console.error(`[App] Retry failed:`, err2);
+                         res.status(404).send('File not found: ' + fileName);
+                    }
+                });
+            } else {
+                res.status(404).send('File not found: ' + fileName);
+            }
         }
     });
 };
