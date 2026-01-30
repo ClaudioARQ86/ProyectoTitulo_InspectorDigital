@@ -8,6 +8,8 @@ import { mostrarMensaje } from './ui.js';
 // Variables globales de cámara
 let streamActual = null;
 let cameraReady = false;
+let facingMode = 'environment'; // 'user' para frontal, 'environment' para trasera
+let availableCameras = [];
 
 /**
  * Abre el modal de captura de cámara e inicializa el stream
@@ -40,8 +42,26 @@ export async function abrirCapturaCamara() {
             throw new Error('Tu navegador no soporta acceso a cámara');
         }
 
-        // Configuración simple para escritorio
-        let constraints = { video: true, audio: false };
+        // Enumerar cámaras disponibles
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        availableCameras = devices.filter(device => device.kind === 'videoinput');
+        console.log('Cámaras disponibles:', availableCameras.length);
+
+        // Mostrar selector si hay múltiples cámaras
+        if (availableCameras.length > 1) {
+            mostrarSelectorCamara();
+        }
+
+        // Configuración mejorada con mejor calidad y brillo
+        let constraints = {
+            video: {
+                facingMode: facingMode,
+                width: { ideal: 1920 },
+                height: { ideal: 1080 },
+                aspectRatio: { ideal: 16/9 }
+            },
+            audio: false
+        };
 
         console.log('Solicitando cámara con constraints:', constraints);
         streamActual = await navigator.mediaDevices.getUserMedia(constraints);
@@ -290,6 +310,36 @@ function mostrarErrorCamara(mensaje) {
         errorMsg.style.borderColor = '#ffcdd2';
     }
     console.error('Error de cámara:', mensaje);
+}
+
+/**
+ * Muestra el selector de cámara (frontal/trasera)
+ */
+function mostrarSelectorCamara() {
+    const modal = document.getElementById('camaraModal');
+    if (!modal) return;
+
+    let selectorExistente = document.getElementById('cameraSwitchBtn');
+    if (selectorExistente) return;
+
+    const switchBtn = document.createElement('button');
+    switchBtn.id = 'cameraSwitchBtn';
+    switchBtn.type = 'button';
+    switchBtn.className = 'btn-camera-switch';
+    switchBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Cambiar Cámara';
+    switchBtn.style.cssText = 'position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(0,0,0,0.7); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;';
+    
+    switchBtn.addEventListener('click', async () => {
+        facingMode = facingMode === 'user' ? 'environment' : 'user';
+        cerrarCapturaCamara();
+        setTimeout(() => abrirCapturaCamara(), 300);
+    });
+
+    const modalContent = modal.querySelector('.camera-modal-content');
+    if (modalContent) {
+        modalContent.style.position = 'relative';
+        modalContent.insertBefore(switchBtn, modalContent.firstChild);
+    }
 }
 
 /**

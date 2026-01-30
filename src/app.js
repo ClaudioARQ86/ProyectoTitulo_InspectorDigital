@@ -123,7 +123,7 @@ app.get('/Index.html', (req, res) => serveHtml(res, 'Index.html'));
 
 app.get('/:page.html', (req, res, next) => {
     const pageName = req.params.page;
-    const allowedPages = ['paso1', 'paso2', 'paso3', 'about', 'config', 'help', 'casos-inspeccionados'];
+    const allowedPages = ['paso1', 'paso2', 'paso3', 'about', 'config', 'help', 'casos-inspeccionados', 'detalle-inspeccion'];
     
     if (allowedPages.includes(pageName)) {
         serveHtml(res, `${pageName}.html`);

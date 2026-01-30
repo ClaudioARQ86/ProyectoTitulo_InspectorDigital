@@ -21,4 +21,8 @@ const upload = multer({
 
 router.post('/', authenticateToken, upload.array('fotos', 20), danosController.guardarDanos);
 
+router.get('/:idDano/detalle', authenticateToken, danosController.obtenerDetalleDano);
+
+router.delete('/:idDano', authenticateToken, danosController.eliminarDano);
+
 module.exports = router;

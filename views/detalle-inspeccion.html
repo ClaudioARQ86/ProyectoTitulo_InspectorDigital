@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Inspección - Inspector Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.1">
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menú</h2>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/Index.html"><i class="fas fa-home"></i> Volver al Inicio</a></li>
+            <li><a href="#" onclick="cerrarSesion(); return false;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+            <li><hr></li>
+            <li><a href="/paso1.html"><i class="fas fa-lock"></i> Buscar Caso</a></li>
+            <li><a href="/casos-inspeccionados.html"><i class="fas fa-list-alt"></i> Casos Asignados</a></li>
+            <li><hr></li>
+            <li><a href="/about.html"><i class="fas fa-info-circle"></i> Sobre la Aplicación</a></li>
+            <li><a href="/config.html"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="/help.html"><i class="fas fa-question-circle"></i> Ayuda</a></li>
+        </ul>
+    </nav>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="/Index.html" style="text-decoration: none; color: inherit; flex: 1;">
+                    <h1>INSPECCIÓN DIGITAL ASTIDA</h1>
+                </a>
+                <div class="header-space"></div>
+            </div>
+        </header>
+
+        <div class="app-main">
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Cargando inspección...</p>
+                </div>
+            </div>
+
+            <div class="detalle-container" id="detalleContainer" style="display: none;">
+                <div class="detalle-header">
+                    <a href="/casos-inspeccionados.html" class="btn-volver">
+                        <i class="fas fa-arrow-left"></i> Volver a Casos Inspeccionados
+                    </a>
+                </div>
+
+                <div class="detalle-section">
+                    <h3><i class="fas fa-file-alt"></i> Información del Caso</h3>
+                    <div class="info-grid" id="infoCaso"></div>
+                </div>
+
+                <div class="detalle-section">
+                    <h3><i class="fas fa-user"></i> Datos del Asegurado</h3>
+                    <div class="info-grid" id="infoAsegurado"></div>
+                </div>
+
+                <div class="detalle-section">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Daños Registrados</h3>
+                    <div class="info-grid" id="infoDanos"></div>
+                </div>
+
+                <div class="detalle-section" id="seccionFotos" style="display: none;">
+                    <h3><i class="fas fa-camera"></i> Fotografías de la Inspección</h3>
+                    <div class="fotos-gallery" id="fotosGallery"></div>
+                </div>
+
+                <div class="detalle-section" id="seccionMapa">
+                    <h3><i class="fas fa-map-marked-alt"></i> Ubicación GPS</h3>
+                    <div class="mapa-container">
+                        <div id="mapaDetalle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-foto" id="modalFoto">
+        <span class="close-modal" id="closeModalFoto">&times;</span>
+        <img id="imgModalFoto" src="" alt="Foto ampliada">
+    </div>
+
+    <script type="module" src="/js/main.js"></script>
+    <script type="module">
+        import { verificarSesion } from '/js/modules/auth.js';
+
+        verificarSesion();
+
+        let map = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const idDano = urlParams.get('idDano');
+
+            if (!idDano) {
+                alert('No se especificó el ID de la inspección');
+                window.location.href = '/casos-inspeccionados.html';
+                return;
+            }
+
+            await cargarDetalleInspeccion(idDano);
+        });
+
+        async function cargarDetalleInspeccion(idDano) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const detalleContainer = document.getElementById('detalleContainer');
+
+            try {
+                loadingOverlay.style.display = 'flex';
+
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/danos/${idDano}/detalle`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar los datos de la inspección');
+                }
+
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'No se pudieron cargar los datos');
+                }
+
+                renderizarDetalle(data.data);
+
+                loadingOverlay.style.display = 'none';
+                detalleContainer.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error:', error);
+                loadingOverlay.style.display = 'none';
+                alert('Error al cargar la inspección: ' + error.message);
+                window.location.href = '/casos-inspeccionados.html';
+            }
+        }
+
+        function renderizarDetalle(detalle) {
+            // Información del caso
+            const infoCaso = document.getElementById('infoCaso');
+            infoCaso.innerHTML = `
+                <div class="info-item">
+                    <label>ID Caso</label>
+                    <div class="value">${detalle.IDCaso || 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <label>Compañía</label>
+                    <div class="value">${detalle.NombreCompania || 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <label>Cobertura</label>
+                    <div class="value">${detalle.DescripcionCobertura || 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <label>Inspector</label>
+                    <div class="value">${detalle.NombreUsuario || 'N/A'}</div>
+                </div>
+            `;
+
+            // Información del asegurado
+            const infoAsegurado = document.getElementById('infoAsegurado');
+            infoAsegurado.innerHTML = `
+                <div class="info-item">
+                    <label>Nombre</label>
+                    <div class="value">${detalle.NombreAsegurado || 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <label>RUT</label>
+                    <div class="value">${detalle.RutAsegurado || 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <label>Bien Asegurado</label>
+                    <div class="value">${detalle.BienAsegurado || 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <label>Dirección</label>
+                    <div class="value">${detalle.DireccionRecinto || 'N/A'}</div>
+                </div>
+            `;
+
+            // Información de daños
+            const infoDanos = document.getElementById('infoDanos');
+            infoDanos.innerHTML = `
+                <div class="info-item" style="grid-column: 1 / -1;">
+                    <label>Descripción de Daños</label>
+                    <div class="value">${detalle.DescripcionDanos || 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <label>Superficie Afectada</label>
+                    <div class="value">${detalle.Superficie ? detalle.Superficie + ' m²' : 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <label>Volumen Afectado</label>
+                    <div class="value">${detalle.Volumen ? detalle.Volumen + ' m³' : 'N/A'}</div>
+                </div>
+            `;
+
+            // Fotografías
+            if (detalle.Fotos && detalle.Fotos.length > 0) {
+                const seccionFotos = document.getElementById('seccionFotos');
+                const fotosGallery = document.getElementById('fotosGallery');
+                seccionFotos.style.display = 'block';
+
+                fotosGallery.innerHTML = detalle.Fotos.map((foto, index) => `
+                    <div class="foto-item" onclick="abrirModalFoto('${foto}')">
+                        <img src="${foto}" alt="Foto ${index + 1}">
+                    </div>
+                `).join('');
+            }
+
+            // Mapa con coordenadas GPS
+            if (detalle.Latitud && detalle.Longitud) {
+                cargarMapa(parseFloat(detalle.Latitud), parseFloat(detalle.Longitud));
+            } else {
+                const seccionMapa = document.getElementById('seccionMapa');
+                seccionMapa.innerHTML = '<div class="no-data"><i class="fas fa-map-marked-alt" style="font-size: 48px; margin-bottom: 10px; display: block;"></i>No hay coordenadas GPS registradas</div>';
+            }
+        }
+
+        function cargarMapa(lat, lng) {
+            // Verificar que Google Maps esté disponible
+            if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+                const seccionMapa = document.getElementById('seccionMapa');
+                seccionMapa.innerHTML = `
+                    <div class="no-data">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 10px; display: block; color: #ff9800;"></i>
+                        <p>Google Maps no está disponible</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Coordenadas: ${lat}, ${lng}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const mapOptions = {
+                center: { lat, lng },
+                zoom: 16,
+                mapTypeId: 'roadmap'
+            };
+
+            map = new google.maps.Map(document.getElementById('mapaDetalle'), mapOptions);
+
+            const marker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                title: 'Ubicación de la inspección'
+            });
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="padding: 8px;">
+                        <h4 style="margin: 0 0 8px 0;">Ubicación de Inspección</h4>
+                        <p style="margin: 0; font-size: 13px;">
+                            <strong>Lat:</strong> ${lat.toFixed(6)}<br>
+                            <strong>Lng:</strong> ${lng.toFixed(6)}
+                        </p>
+                    </div>
+                `
+            });
+
+            marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+            });
+        }
+
+        window.abrirModalFoto = function(src) {
+            const modal = document.getElementById('modalFoto');
+            const img = document.getElementById('imgModalFoto');
+            img.src = src;
+            modal.classList.add('active');
+        };
+
+        document.getElementById('closeModalFoto').addEventListener('click', () => {
+            document.getElementById('modalFoto').classList.remove('active');
+        });
+
+        document.getElementById('modalFoto').addEventListener('click', (e) => {
+            if (e.target.id === 'modalFoto') {
+                document.getElementById('modalFoto').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

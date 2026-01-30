@@ -81,6 +81,153 @@ const guardarDanos = async (req, res) => {
     }
 };
 
+const obtenerDetalleDano = async (req, res) => {
+    try {
+        const { idDano } = req.params;
+
+        if (!idDano) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID de daño es requerido'
+            });
+        }
+
+        const pool = await getConnection();
+        
+        const query = `
+            SELECT 
+                d.IDDanos,
+                d.Descripcion as DescripcionDanos,
+                d.Superficie,
+                d.Volumen,
+                c.IDCaso,
+                co.Nombre as NombreCompania,
+                cb.Descripcion as DescripcionCobertura,
+                CONCAT(a.Nombre, ' ', a.ApellidoPaterno, ' ', a.ApellidoMaterno) as NombreAsegurado,
+                CONCAT(a.RUT, '-', a.DV) as RutAsegurado,
+                b.Descripcion as BienAsegurado,
+                r.Direccion as DireccionRecinto,
+                u.NombreUsuario,
+                p.Tipo as TipoPerfil
+            FROM Danos d
+            INNER JOIN Recinto r ON d.IDRecinto = r.IDRecinto
+            INNER JOIN Bienes b ON r.IDBienes = b.IDBienes
+            INNER JOIN Asegurado a ON b.IDAsegurado = a.IDAsegurado
+            INNER JOIN Caso c ON a.IDAsegurado = c.IDAsegurado
+            INNER JOIN Compania co ON c.IDCompania = co.IDCompania
+            INNER JOIN Cobertura cb ON co.IDCobertura = cb.IDCobertura
+            LEFT JOIN CasoAsignado ca ON c.IDCaso = ca.IDCaso
+            LEFT JOIN Perfil p ON ca.IDPerfil = p.IDPerfil
+            LEFT JOIN Usuario u ON p.IDPerfil = u.IDPerfil
+            WHERE d.IDDanos = @idDano
+        `;
+
+        const result = await pool.request()
+            .input('idDano', sql.Int, idDano)
+            .query(query);
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No se encontró la inspección'
+            });
+        }
+
+        const detalle = result.recordset[0];
+
+        // Obtener fotos asociadas
+        const queryFotos = `
+            SELECT IDFoto, BinarioImagen
+            FROM Fotos
+            WHERE IDDanos = @idDano
+        `;
+
+        const resultFotos = await pool.request()
+            .input('idDano', sql.Int, idDano)
+            .query(queryFotos);
+
+        // Convertir binarios a base64 para enviar al frontend
+        const fotos = resultFotos.recordset.map(foto => {
+            const base64 = Buffer.from(foto.BinarioImagen).toString('base64');
+            return `data:image/jpeg;base64,${base64}`;
+        });
+
+        detalle.Fotos = fotos;
+
+        return res.status(200).json({
+            success: true,
+            data: detalle
+        });
+
+    } catch (error) {
+        console.error('❌ Error al obtener detalle de daño:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error al obtener el detalle de la inspección',
+            error: error.message
+        });
+    }
+};
+
+const eliminarDano = async (req, res) => {
+    let transaction;
+    
+    try {
+        const { idDano } = req.params;
+
+        if (!idDano) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID de daño es requerido'
+            });
+        }
+
+        const pool = await getConnection();
+        transaction = new sql.Transaction(pool);
+        await transaction.begin();
+
+        // Primero eliminar las fotos asociadas
+        const queryDeleteFotos = `DELETE FROM Fotos WHERE IDDanos = @idDano`;
+        await new sql.Request(transaction)
+            .input('idDano', sql.Int, idDano)
+            .query(queryDeleteFotos);
+
+        // Luego eliminar el registro de daños
+        const queryDeleteDano = `DELETE FROM Danos WHERE IDDanos = @idDano`;
+        const result = await new sql.Request(transaction)
+            .input('idDano', sql.Int, idDano)
+            .query(queryDeleteDano);
+
+        if (result.rowsAffected[0] === 0) {
+            await transaction.rollback();
+            return res.status(404).json({
+                success: false,
+                message: 'No se encontró la inspección a eliminar'
+            });
+        }
+
+        await transaction.commit();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Inspección eliminada correctamente'
+        });
+
+    } catch (error) {
+        if (transaction) {
+            await transaction.rollback();
+        }
+        console.error('❌ Error al eliminar daño:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'No se puede eliminar, debido a que no se han Inspeccionado los daños de la propiedad.',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
-    guardarDanos
+    guardarDanos,
+    obtenerDetalleDano,
+    eliminarDano
 };

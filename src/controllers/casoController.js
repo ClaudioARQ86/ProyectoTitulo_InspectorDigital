@@ -136,7 +136,8 @@ const obtenerCasosInspeccionados = async (req, res) => {
                 cb.Descripcion AS Cobertura,
                 b.Descripcion AS BienAsegurado,
                 r.Direccion AS Recinto,
-                d.Descripcion AS Danos
+                d.Descripcion AS Danos,
+                d.IDDanos
             FROM Caso c
             INNER JOIN Asegurado a ON c.IDAsegurado = a.IDAsegurado
             INNER JOIN Compania co ON c.IDCompania = co.IDCompania
@@ -144,10 +145,10 @@ const obtenerCasosInspeccionados = async (req, res) => {
             INNER JOIN BIENES b ON a.IDAsegurado = b.IDAsegurado
             INNER JOIN Recinto r ON b.IDBienes = r.IDBienes
             LEFT JOIN Danos d ON r.IDRecinto = d.IDRecinto
-            INNER JOIN CasoAsignado ca ON c.IDCaso = ca.IDCaso
-            INNER JOIN Perfil p ON ca.IDPerfil = p.IDPerfil
-            INNER JOIN Usuario u ON p.IDPerfil = u.IDPerfil
-            WHERE u.IDUsuario = @idUsuario
+            LEFT JOIN CasoAsignado ca ON c.IDCaso = ca.IDCaso
+            LEFT JOIN Perfil p ON ca.IDPerfil = p.IDPerfil
+            LEFT JOIN Usuario u ON p.IDPerfil = u.IDPerfil
+            WHERE u.IDUsuario = @idUsuario           
             ORDER BY d.IDDanos DESC;
         `;
 
