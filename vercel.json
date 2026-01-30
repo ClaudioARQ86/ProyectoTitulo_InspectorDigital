@@ -8,22 +8,6 @@
   ],
   "routes": [
     {
-      "src": "/css/style.css",
-      "dest": "/public/css/style.css"
-    },
-    {
-      "src": "/js/login.js",
-      "dest": "/public/js/login.js"
-    },
-    {
-      "src": "/js/main.js",
-      "dest": "/public/js/main.js"
-    },
-    {
-      "src": "/js/modules/(.*)",
-      "dest": "/public/js/modules/$1"
-    },
-    {
       "src": "/(.*)",
       "dest": "/api/index.js"
     }
