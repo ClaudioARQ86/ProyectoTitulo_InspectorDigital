@@ -11,6 +11,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Configurar rutas estáticas con opciones explícitas
+app.use('/css', express.static(path.join(__dirname, '../public/css'), {
+    maxAge: '1d',
+    setHeaders: (res) => {
+        res.set('Content-Type', 'text/css');
+    }
+}));
+
+app.use('/js', express.static(path.join(__dirname, '../public/js'), {
+    maxAge: '1d',
+    setHeaders: (res) => {
+        res.set('Content-Type', 'application/javascript');
+    }
+}));
+
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.get('/', (req, res) => {

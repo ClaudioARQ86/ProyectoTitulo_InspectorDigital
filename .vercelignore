@@ -1,43 +1,50 @@
 # Archivos y carpetas a ignorar en el despliegue de Vercel
 
-# Documentación
-*.md
-!README.md
+# Documentación (pero mantener README.md)
+
 GOOGLE_MAPS_CONFIG.md
 
 # Node modules (Vercel los instala automáticamente)
+
 node_modules/
 
 # Archivos de entorno local
-.env
+
 .env.local
+.env.\*.local
 
 # Archivos de desarrollo
+
 nodemon.json
 
 # Logs
-*.log
-npm-debug.log*
+
+_.log
+npm-debug.log_
 yarn-debug.log*
 yarn-error.log*
 
 # Sistema operativo
+
 .DS_Store
 Thumbs.db
 
 # IDE
+
 .vscode/
 .idea/
-*.swp
-*.swo
+_.swp
+_.swo
 
 # Git
+
 .git/
-.gitignore
 
 # Archivos temporales
-*.tmp
-*.temp
+
+_.tmp
+_.temp
 
 # Carpetas de instrucciones (no necesarias en producción)
+
 Anexos/
