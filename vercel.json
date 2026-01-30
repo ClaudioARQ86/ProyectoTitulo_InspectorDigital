@@ -4,35 +4,28 @@
     {
       "src": "api/index.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/css/(.*)",
-      "dest": "/public/css/$1"
+      "src": "/css/style.css",
+      "dest": "/public/css/style.css"
     },
     {
-      "src": "/js/(.*)",
-      "dest": "/public/js/$1"
+      "src": "/js/login.js",
+      "dest": "/public/js/login.js"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "src": "/js/main.js",
+      "dest": "/public/js/main.js"
     },
     {
-      "src": "/(.*\\.(html|ico|png|jpg|jpeg|gif|svg))",
-      "dest": "/api/index.js"
+      "src": "/js/modules/(.*)",
+      "dest": "/public/js/modules/$1"
     },
     {
       "src": "/(.*)",
       "dest": "/api/index.js"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
