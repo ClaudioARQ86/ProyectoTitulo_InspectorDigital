@@ -170,6 +170,7 @@ ProyectoTitulo_InspectorDigital/
 - **[LOGIN_README.md](LOGIN_README.md)** - Documentación completa del sistema de autenticación
 - **[GUIA_RAPIDA_LOGIN.md](GUIA_RAPIDA_LOGIN.md)** - Guía rápida de inicio con login
 - **[VERCEL_DEPLOY.md](VERCEL_DEPLOY.md)** - Guía completa para desplegar en Vercel
+- **[VERCEL_TROUBLESHOOTING.md](VERCEL_TROUBLESHOOTING.md)** - Solución de problemas en Vercel
 - **[INSTALAR_NODEJS.md](INSTALAR_NODEJS.md)** - Guía para instalar Node.js
 
 ## 🚀 Desplegar en Vercel
