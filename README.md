@@ -39,4 +39,6 @@ PORT=3000
 
 ## Despliegue en Vercel
 
-Configurar las variables de entorno en Vercel con los mismos nombres del .env.
+Configurar las variables de entorno en Vercel con los mismos nombres del .env. 
+
+CARQ
