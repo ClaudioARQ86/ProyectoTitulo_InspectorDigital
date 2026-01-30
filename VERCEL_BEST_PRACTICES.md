@@ -3,11 +3,13 @@
 ## 📝 Variables de Entorno
 
 ### ⚠️ NUNCA subir al repositorio:
+
 - ❌ `.env`
 - ❌ Contraseñas en código
 - ❌ Tokens o secrets hardcodeados
 
 ### ✅ Usar siempre:
+
 - ✅ Variables de entorno de Vercel
 - ✅ `.env.example` para referencia
 - ✅ `process.env.VARIABLE_NAME` en el código
@@ -68,10 +70,12 @@ yarn-error.log
 ## 🚀 Despliegue Automático
 
 Vercel redespliega automáticamente cuando:
+
 - Haces push a la rama principal (main/master)
 - Haces merge de un pull request
 
 ### Ramas:
+
 - `main` ➜ Producción
 - `develop` ➜ Preview
 - `feature/*` ➜ Preview
@@ -126,12 +130,12 @@ public/
 
 ```html
 <!-- ✅ Correcto -->
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/style.css" />
 <script src="/js/main.js"></script>
 
 <!-- ❌ Incorrecto -->
-<link rel="stylesheet" href="./css/style.css">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="../css/style.css" />
 ```
 
 ## 🔍 Debugging
@@ -151,6 +155,7 @@ vercel logs [deployment-url]
 ### Errores comunes:
 
 #### Error: Module not found
+
 ```bash
 # Solución: Verificar package.json
 npm install
@@ -160,6 +165,7 @@ git push
 ```
 
 #### Error: Cannot connect to database
+
 ```bash
 # Solución: Verificar variables de entorno
 vercel env ls
@@ -312,6 +318,7 @@ vercel rollback [deployment-url]
 ```
 
 O desde el dashboard:
+
 1. Ve a Deployments
 2. Selecciona el deployment anterior que funcionaba
 3. Clic en "..." > "Promote to Production"

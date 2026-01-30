@@ -66,6 +66,7 @@ Este archivo define cómo Vercel debe construir y servir la aplicación:
 ### api/index.js
 
 Punto de entrada serverless que:
+
 - Exporta la aplicación Express
 - Maneja rutas estáticas en el entorno de Vercel
 - Detecta automáticamente si está en Vercel
@@ -162,6 +163,7 @@ vercel --prod
 ### Variables de Entorno Sensibles
 
 **NUNCA** subas archivos `.env` al repositorio. Usa solo:
+
 - Variables de entorno de Vercel
 - `.env.example` como referencia
 
