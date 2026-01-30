@@ -312,51 +312,6 @@
                 btnSubmit.innerHTML = 'SIGUIENTE <i class="fas fa-arrow-right"></i>';
             }
         });
-
-        // Event listeners para botones de cámara
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnCerrarCamara = document.getElementById('btnCerrarCamara');
-            const btnCancelarCamara = document.getElementById('btnCancelarCamara');
-            const btnCapturarFoto = document.getElementById('btnCapturarFoto');
-            const camaraModal = document.getElementById('camaraModal');
-
-            if (btnCerrarCamara) {
-                btnCerrarCamara.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Click en cerrar X');
-                    cerrarCapturaCamara();
-                });
-            }
-
-            if (btnCancelarCamara) {
-                btnCancelarCamara.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Click en cancelar');
-                    cerrarCapturaCamara();
-                });
-            }
-
-            if (btnCapturarFoto) {
-                btnCapturarFoto.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Click en capturar foto');
-                    capturarFoto();
-                });
-            }
-
-            // Cerrar al hacer click fuera del modal
-            if (camaraModal) {
-                camaraModal.addEventListener('click', (e) => {
-                    if (e.target === camaraModal) {
-                        console.log('Click fuera del modal');
-                        cerrarCapturaCamara();
-                    }
-                });
-            }
-        });
     </script>
     <script type="module" src="/js/main.js"></script>
 </body>

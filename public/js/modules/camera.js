@@ -342,10 +342,18 @@ function mostrarSelectorCamara() {
     }
 }
 
+// Bandera para evitar inicializar listeners múltiples veces
+let listenersInitialized = false;
+
 /**
  * Inicializa los event listeners del modal de cámara
  */
 export function initCameraListeners() {
+    // Evitar agregar listeners múltiples veces
+    if (listenersInitialized) {
+        return;
+    }
+    
     const camaraModal = document.getElementById('camaraModal');
     const btnCapturar = document.getElementById('btnCapturarFoto');
     const btnCancelar = document.getElementById('btnCancelarCamara');
@@ -379,4 +387,6 @@ export function initCameraListeners() {
             cerrarCapturaCamara();
         });
     }
+    
+    listenersInitialized = true;
 }
